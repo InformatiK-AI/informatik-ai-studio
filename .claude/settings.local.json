@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "WebSearch",
+      "Bash(dir:*)",
+      "Bash(done)",
+      "Bash(findstr:*)",
+      "Bash(find:*)",
+      "Bash(wc:*)",
+      "Bash(grep:*)",
+      "Bash(python build_mixins.py:*)",
+      "Skill(hooks-setup)",
+      "Bash(gh issue create:*)",
+      "Bash(where:*)"
+    ]
+  }
+}

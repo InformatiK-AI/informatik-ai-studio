@@ -1,0 +1,358 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "last_updated": "2026-01-17",
+  "description": "Machine-readable DAG (Directed Acyclic Graph) for agent invocation order, dependencies, and orchestration",
+
+  "nodes": {
+    "database-architect": {
+      "id": "database-architect",
+      "layer": 1,
+      "color": "75,0,130",
+      "triggers": ["database schema changes", "migration planning", "index optimization", "data modeling"],
+      "requires": ["CLAUDE.md"],
+      "produces": "database.md",
+      "is_mandatory": false,
+      "is_gate": false
+    },
+    "api-contract-designer": {
+      "id": "api-contract-designer",
+      "layer": 2,
+      "color": "255,140,0",
+      "triggers": ["API endpoints needed", "OpenAPI/Swagger", "GraphQL schema", "gRPC contracts"],
+      "requires": ["database.md"],
+      "requires_optional": true,
+      "produces": "api_contract.md",
+      "is_mandatory": false,
+      "is_gate": false
+    },
+    "domain-logic-architect": {
+      "id": "domain-logic-architect",
+      "layer": 3,
+      "color": "red",
+      "triggers": ["backend logic needed", "business rules", "service layer"],
+      "requires": ["api_contract.md"],
+      "requires_optional": true,
+      "produces": "backend.md",
+      "is_mandatory": false,
+      "is_gate": false
+    },
+    "frontend-architect": {
+      "id": "frontend-architect",
+      "layer": 3,
+      "color": "0, 191, 255",
+      "triggers": ["UI/frontend needed", "component design", "state management"],
+      "requires": ["api_contract.md"],
+      "requires_optional": true,
+      "produces": "frontend.md",
+      "is_mandatory": false,
+      "is_gate": false
+    },
+    "devops-architect": {
+      "id": "devops-architect",
+      "layer": 3,
+      "color": "0,128,128",
+      "triggers": ["deployment needed", "CI/CD setup", "infrastructure"],
+      "requires": ["CLAUDE.md"],
+      "produces": "devops.md",
+      "is_mandatory": false,
+      "is_gate": false
+    },
+    "security-architect": {
+      "id": "security-architect",
+      "layer": 4,
+      "color": "0,64,128",
+      "triggers": ["ALWAYS"],
+      "requires": ["all_architecture_plans"],
+      "produces": "security_plan.md",
+      "is_mandatory": true,
+      "is_gate": true,
+      "gate_type": "MANDATORY"
+    },
+    "test-strategy-planner": {
+      "id": "test-strategy-planner",
+      "layer": 4,
+      "color": "green",
+      "triggers": ["tests needed", "test planning", "QA strategy"],
+      "requires": ["all_architecture_plans"],
+      "produces": "test_cases.md",
+      "is_mandatory": false,
+      "is_gate": false
+    },
+    "implementation-test-engineer": {
+      "id": "implementation-test-engineer",
+      "layer": 5,
+      "color": "153, 50, 204",
+      "triggers": ["writing tests", "test implementation"],
+      "requires": ["test_cases.md"],
+      "produces": "test_files",
+      "is_mandatory": true,
+      "is_gate": false,
+      "can_write_code": true
+    },
+    "experience-analyzer": {
+      "id": "experience-analyzer",
+      "layer": 6,
+      "color": "128, 0, 128",
+      "triggers": ["UX/DX analysis needed", "usability review"],
+      "requires": ["implementation"],
+      "produces": "experience_analysis.md",
+      "is_mandatory": false,
+      "is_gate": false
+    },
+    "n8n-architect": {
+      "id": "n8n-architect",
+      "layer": 3,
+      "color": "255, 107, 107",
+      "triggers": ["workflow automation", "n8n workflow design"],
+      "requires": ["CLAUDE.md"],
+      "produces": "n8n-workflow-plan.md",
+      "is_mandatory": false,
+      "is_gate": false
+    }
+  },
+
+  "edges": [
+    {
+      "from": "database-architect",
+      "to": "api-contract-designer",
+      "type": "dependency",
+      "condition": "if_applicable"
+    },
+    {
+      "from": "api-contract-designer",
+      "to": "domain-logic-architect",
+      "type": "dependency",
+      "condition": "if_applicable"
+    },
+    {
+      "from": "api-contract-designer",
+      "to": "frontend-architect",
+      "type": "dependency",
+      "condition": "if_applicable"
+    },
+    {
+      "from": "api-contract-designer",
+      "to": "devops-architect",
+      "type": "parallel",
+      "condition": "if_applicable"
+    },
+    {
+      "from": "domain-logic-architect",
+      "to": "security-architect",
+      "type": "dependency",
+      "condition": "always"
+    },
+    {
+      "from": "frontend-architect",
+      "to": "security-architect",
+      "type": "dependency",
+      "condition": "always"
+    },
+    {
+      "from": "devops-architect",
+      "to": "security-architect",
+      "type": "dependency",
+      "condition": "if_applicable"
+    },
+    {
+      "from": "n8n-architect",
+      "to": "security-architect",
+      "type": "dependency",
+      "condition": "if_applicable"
+    },
+    {
+      "from": "security-architect",
+      "to": "test-strategy-planner",
+      "type": "parallel",
+      "condition": "always"
+    },
+    {
+      "from": "test-strategy-planner",
+      "to": "implementation-test-engineer",
+      "type": "dependency",
+      "condition": "always"
+    },
+    {
+      "from": "implementation-test-engineer",
+      "to": "experience-analyzer",
+      "type": "optional",
+      "condition": "if_requested"
+    }
+  ],
+
+  "feature_patterns": {
+    "backend-only": {
+      "description": "Backend-only feature without frontend",
+      "sequence": ["database-architect", "api-contract-designer", "domain-logic-architect", "security-architect"],
+      "parallel_allowed": [],
+      "mandatory_gates": ["security-architect"]
+    },
+    "frontend-only": {
+      "description": "Frontend-only feature",
+      "sequence": ["frontend-architect", "security-architect"],
+      "parallel_allowed": [],
+      "mandatory_gates": ["security-architect"]
+    },
+    "fullstack": {
+      "description": "Full-stack feature with database, API, backend, and frontend",
+      "sequence": ["database-architect", "api-contract-designer"],
+      "parallel_after_api": ["domain-logic-architect", "frontend-architect"],
+      "converge_at": "security-architect",
+      "mandatory_gates": ["security-architect"]
+    },
+    "infrastructure": {
+      "description": "Infrastructure/DevOps feature",
+      "sequence": ["devops-architect", "security-architect"],
+      "parallel_allowed": [],
+      "mandatory_gates": ["security-architect"]
+    },
+    "workflow-automation": {
+      "description": "n8n workflow automation feature",
+      "sequence": ["n8n-architect", "security-architect"],
+      "parallel_allowed": [],
+      "mandatory_gates": ["security-architect"]
+    }
+  },
+
+  "mandatory_agents": {
+    "always_invoke": ["security-architect"],
+    "always_invoke_for_code": ["implementation-test-engineer"],
+    "rationale": {
+      "security-architect": "Reviews all plans for OWASP Top 10 vulnerabilities",
+      "implementation-test-engineer": "Ensures TDD/RAD test coverage"
+    }
+  },
+
+  "conditional_rules": [
+    {
+      "condition": "feature.involves_database",
+      "action": "INVOKE",
+      "agent": "database-architect",
+      "priority": 1,
+      "wait_for_output": "database.md"
+    },
+    {
+      "condition": "feature.involves_api",
+      "action": "INVOKE",
+      "agent": "api-contract-designer",
+      "priority": 2,
+      "wait_for_output": "api_contract.md"
+    },
+    {
+      "condition": "feature.involves_backend",
+      "action": "INVOKE",
+      "agent": "domain-logic-architect",
+      "priority": 3,
+      "input": "api_contract.md"
+    },
+    {
+      "condition": "feature.involves_frontend",
+      "action": "INVOKE",
+      "agent": "frontend-architect",
+      "priority": 3,
+      "input": "api_contract.md"
+    },
+    {
+      "condition": "feature.involves_deployment",
+      "action": "INVOKE",
+      "agent": "devops-architect",
+      "priority": 3
+    },
+    {
+      "condition": "feature.involves_workflow",
+      "action": "INVOKE",
+      "agent": "n8n-architect",
+      "priority": 3
+    },
+    {
+      "condition": "ALWAYS",
+      "action": "INVOKE",
+      "agent": "security-architect",
+      "priority": 100,
+      "input": "all_generated_plans",
+      "gate": true
+    }
+  ],
+
+  "coherence_validations": [
+    {
+      "id": "database-api-coherence",
+      "plans": ["database.md", "api_contract.md"],
+      "validation": "Schema types match API DTOs",
+      "severity": "error"
+    },
+    {
+      "id": "api-backend-coherence",
+      "plans": ["api_contract.md", "backend.md"],
+      "validation": "Endpoints have handlers",
+      "severity": "error"
+    },
+    {
+      "id": "api-frontend-coherence",
+      "plans": ["api_contract.md", "frontend.md"],
+      "validation": "Frontend calls correct endpoints",
+      "severity": "error"
+    },
+    {
+      "id": "all-security-coherence",
+      "plans": ["all", "security_plan.md"],
+      "validation": "No security gaps identified",
+      "severity": "blocker"
+    }
+  ],
+
+  "status_indicators": {
+    "PENDING": {
+      "description": "Agent not yet invoked",
+      "color": "gray"
+    },
+    "IN_PROGRESS": {
+      "description": "Agent is working on plan",
+      "color": "blue"
+    },
+    "COMPLETED": {
+      "description": "Plan generated successfully",
+      "color": "green"
+    },
+    "BLOCKED": {
+      "description": "Waiting for dependency",
+      "color": "yellow"
+    },
+    "FAILED": {
+      "description": "Agent encountered error",
+      "color": "red"
+    }
+  },
+
+  "workflow_integration": {
+    "flow-feature-build": {
+      "phase_0": {
+        "name": "Pre-flight check",
+        "action": "Validates agent availability"
+      },
+      "phase_1_5": {
+        "name": "Plan validation",
+        "action": "Ensures all plans exist and are coherent"
+      },
+      "phase_2": {
+        "name": "Dynamic agent invocation",
+        "action": "Invokes agents based on feature type pattern"
+      },
+      "phase_3": {
+        "name": "Security validation",
+        "action": "Mandatory security-architect gate"
+      }
+    },
+    "flow-qa-validate": {
+      "security_review": {
+        "agent": "security-architect",
+        "mode": "validation"
+      },
+      "acceptance_validation": {
+        "skill": "acceptance-validator",
+        "action": "AC validation"
+      }
+    }
+  }
+}

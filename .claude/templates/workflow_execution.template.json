@@ -1,0 +1,28 @@
+{
+  "$schema": "./workflow_execution.schema.json",
+  "_description": "Template for tracking workflow execution audit trail. Append entries to .claude/logs/workflow_execution.json",
+  "executions": [
+    {
+      "id": "{UUID}",
+      "workflow": "flow-feature-build|flow-qa-validate|flow-feedback-fix|flow-plan|flow-md-architect|flow-analyze-bug|flow-issue-create",
+      "feature_name": "{FEATURE_NAME}",
+      "argument": "{ARGUMENT}",
+      "started_at": null,
+      "completed_at": null,
+      "status": "pending|in_progress|completed|failed|escalated",
+      "phases_completed": [],
+      "agents_invoked": [],
+      "skills_invoked": [],
+      "iteration": null,
+      "pr_number": null,
+      "metrics": {
+        "duration_ms": null,
+        "files_modified": 0,
+        "tests_run": 0,
+        "tests_passed": 0
+      },
+      "errors": [],
+      "notes": ""
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+# Semgrep ignore patterns for InformatiK-AI Studio
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+
+# Test files (scan separately)
+**/*.test.ts
+**/*.test.tsx
+**/*.spec.ts
+**/*.spec.tsx
+tests/
+__tests__/
+
+# Generated files
+*.generated.ts
+lib/database.types.ts
+
+# Config files
+*.config.js
+*.config.ts
+*.config.mjs
+
+# IDE and editor
+.vscode/
+.idea/
+
+# Cache
+.cache/
+.turbo/

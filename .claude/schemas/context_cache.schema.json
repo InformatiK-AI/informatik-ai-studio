@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://informatik-ai.dev/schemas/context_cache.schema.json",
+  "title": "Context Cache",
+  "description": "Schema for shared context cache (flow-feature-build Phase 0.5)",
+  "type": "object",
+
+  "required": [
+    "feature_name",
+    "constitution",
+    "metadata"
+  ],
+
+  "properties": {
+    "feature_name": {
+      "type": "string",
+      "description": "Name of the feature being built",
+      "minLength": 1
+    },
+    "constitution": {
+      "type": "object",
+      "description": "Parsed CLAUDE.md sections",
+      "properties": {
+        "stack": {
+          "type": "object",
+          "description": "Technology stack configuration",
+          "properties": {
+            "framework": { "type": "string" },
+            "language": { "type": "string" },
+            "database": { "type": "string" },
+            "ui_library": { "type": "string" },
+            "testing": { "type": "string" }
+          }
+        },
+        "methodology": {
+          "type": "object",
+          "description": "Development methodology settings",
+          "properties": {
+            "workflow": { "type": "string", "enum": ["TDD", "RAD", "Standard"] },
+            "code_review_required": { "type": "boolean" },
+            "min_test_coverage": { "type": "number", "minimum": 0, "maximum": 100 }
+          }
+        },
+        "core_team": {
+          "type": "array",
+          "description": "Core agent team from CLAUDE.md",
+          "items": { "type": "string" }
+        },
+        "vcs": {
+          "type": "object",
+          "description": "Version control settings",
+          "properties": {
+            "cli": { "type": "string", "enum": ["gh", "glab"] },
+            "branch_prefix": { "type": "string" },
+            "main_branch": { "type": "string" }
+          }
+        }
+      }
+    },
+    "session_context": {
+      "type": "object",
+      "description": "Feature context session data",
+      "properties": {
+        "session_file": { "type": "string" },
+        "scope": { "type": "string", "enum": ["feature", "epic", "project"] },
+        "plan_name": { "type": "string" }
+      }
+    },
+    "agent_plans": {
+      "type": "object",
+      "description": "Generated agent plans (if available)",
+      "additionalProperties": {
+        "type": "object",
+        "properties": {
+          "file": { "type": "string" },
+          "status": { "type": "string", "enum": ["pending", "generated", "validated"] },
+          "generated_at": { "type": "string", "format": "date-time" }
+        }
+      }
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Cache metadata",
+      "required": ["version", "created_at", "last_updated"],
+      "properties": {
+        "version": {
+          "type": "string",
+          "description": "Cache schema version"
+        },
+        "created_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "last_updated": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "status": {
+          "type": "string",
+          "enum": ["active", "stale", "expired"]
+        },
+        "ttl_seconds": {
+          "type": "integer",
+          "description": "Time-to-live in seconds",
+          "minimum": 0
+        }
+      }
+    }
+  },
+
+  "additionalProperties": false
+}

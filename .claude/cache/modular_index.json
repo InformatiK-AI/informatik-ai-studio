@@ -1,0 +1,33 @@
+{
+  "version": "1.0",
+  "created": "2026-01-17T14:30:00Z",
+  "architecture_mode": "modular",
+  "source_claude_md": "CLAUDE.md",
+  "session_file": ".claude/sessions/context_session_md_architect_20260117_143000.md",
+  "auto_loaded": [
+    {"file": ".claude/rules/code-standards.md", "priority": "high"},
+    {"file": ".claude/rules/testing-policy.md", "priority": "high"},
+    {"file": ".claude/rules/security-policy.md", "priority": "critical"},
+    {"file": ".claude/rules/git-workflow.md", "priority": "medium"},
+    {"file": ".claude/rules/agent-coordination.md", "priority": "medium"},
+    {"file": ".claude/rules/new-project-workflow.md", "priority": "high"}
+  ],
+  "path_specific": [
+    {
+      "file": ".claude/rules/domain/api-rules.md",
+      "paths": ["app/api/**", "lib/api/**", "**/*.route.ts"]
+    },
+    {
+      "file": ".claude/rules/domain/ui-rules.md",
+      "paths": ["components/**", "app/**/page.tsx", "app/**/layout.tsx", "**/*.component.tsx"]
+    }
+  ],
+  "on_demand": [
+    {"file": ".claude/docs/architecture/tech-stack.md", "load_when": "Stack decisions"},
+    {"file": ".claude/docs/architecture/database-schema.md", "load_when": "DB changes"},
+    {"file": ".claude/docs/architecture/api-contracts.md", "load_when": "API work"},
+    {"file": ".claude/docs/patterns/ai-integration.md", "load_when": "AI features"},
+    {"file": ".claude/docs/patterns/editor-preview.md", "load_when": "Editor work"},
+    {"file": ".claude/docs/guides/deployment.md", "load_when": "Deploy tasks"}
+  ]
+}

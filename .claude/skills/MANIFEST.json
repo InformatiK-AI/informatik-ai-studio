@@ -1,0 +1,602 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.4.0",
+  "last_updated": "2026-01-17",
+  "description": "Central manifest for all skills in the InformatiK-AI-meth framework (with agent cross-references and dependency graph)",
+  "total_skills": 37,
+  "shared_mixins": {
+    "directory": "_shared/",
+    "manifest": "_shared/MIXINS.json",
+    "description": "Reusable components to reduce duplication across skills (DRY)"
+  },
+  "categories": {
+    "development": {
+      "description": "Skills for software development across different layers",
+      "skills": ["senior-frontend", "senior-backend", "senior-fullstack", "frontend-design", "react-best-practices", "api-integration-specialist"]
+    },
+    "architecture": {
+      "description": "Skills for system design and architectural planning",
+      "skills": ["senior-architect", "claude-md-architect"]
+    },
+    "devops": {
+      "description": "Skills for CI/CD, infrastructure, and deployment",
+      "skills": ["senior-devops", "ci-cd-architect", "hooks-setup", "git-hooks-setup", "claude-code-hooks", "security-scanning-hooks", "dependency-installer", "env-configurator"]
+    },
+    "security": {
+      "description": "Skills for security engineering and auditing",
+      "skills": ["senior-security"]
+    },
+    "data": {
+      "description": "Skills for data engineering and data science",
+      "skills": ["senior-data-engineer", "senior-data-scientist"]
+    },
+    "design": {
+      "description": "Skills for UI/UX design and design systems",
+      "skills": ["ui-design-system", "ux-researcher-designer", "artifacts-builder", "theme-factory"]
+    },
+    "quality": {
+      "description": "Skills for code review, testing, and validation",
+      "skills": ["code-reviewer", "acceptance-validator", "preflight-check"]
+    },
+    "content": {
+      "description": "Skills for content creation and SEO",
+      "skills": ["content-creator", "content-research-writer", "seo-optimizer"]
+    },
+    "framework": {
+      "description": "Skills for framework management and workflow orchestration",
+      "skills": ["skill-creator", "agent-librarian", "agent-development", "brainstorming", "writing-plans", "implementation-orchestrator"]
+    },
+    "leadership": {
+      "description": "Skills for technical leadership and advisory",
+      "skills": ["cto-advisor"]
+    },
+    "integrations": {
+      "description": "Skills for building integrations and extensions",
+      "skills": ["mcp-builder"]
+    }
+  },
+  "skills": {
+    "senior-frontend": {
+      "name": "senior-frontend",
+      "description": "Comprehensive frontend development skill for building modern, performant web applications using ReactJS, NextJS, TypeScript, Tailwind CSS.",
+      "category": "development",
+      "tags": ["react", "nextjs", "typescript", "tailwind", "frontend", "performance", "ui"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["component_scaffolder.py", "bundle_analyzer.py", "performance_auditor.py"],
+      "dependencies": [],
+      "related_skills": ["frontend-design", "react-best-practices", "ui-design-system"],
+      "related_agents": ["frontend-architect"]
+    },
+    "senior-backend": {
+      "name": "senior-backend",
+      "description": "Comprehensive backend development skill for building scalable backend systems using NodeJS, Express, Go, Python, Postgres, GraphQL, REST APIs.",
+      "category": "development",
+      "tags": ["nodejs", "express", "go", "python", "postgres", "graphql", "rest", "api", "backend"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["api_scaffolder.py", "database_migration_tool.py", "api_load_tester.py"],
+      "dependencies": [],
+      "related_skills": ["api-integration-specialist", "senior-data-engineer"],
+      "related_agents": ["database-architect", "api-contract-designer", "domain-logic-architect"]
+    },
+    "senior-fullstack": {
+      "name": "senior-fullstack",
+      "description": "Comprehensive fullstack development skill for building complete web applications with React, Next.js, Node.js, GraphQL, and PostgreSQL.",
+      "category": "development",
+      "tags": ["fullstack", "react", "nextjs", "nodejs", "graphql", "postgresql"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["project_scaffolder.py", "code_quality_analyzer.py", "dependency_checker.py"],
+      "dependencies": [],
+      "related_skills": ["senior-frontend", "senior-backend"],
+      "related_agents": ["domain-logic-architect", "n8n-architect"]
+    },
+    "frontend-design": {
+      "name": "frontend-design",
+      "description": "Create distinctive, production-grade frontend interfaces with high design quality.",
+      "category": "development",
+      "tags": ["design", "frontend", "ui", "css", "styling"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["senior-frontend", "ui-design-system", "theme-factory"],
+      "related_agents": ["frontend-architect"]
+    },
+    "react-best-practices": {
+      "name": "react-best-practices",
+      "description": "Comprehensive React and Next.js performance optimization guide with 40+ rules for eliminating waterfalls, optimizing bundles, and improving rendering.",
+      "category": "development",
+      "tags": ["react", "nextjs", "performance", "optimization", "best-practices"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["senior-frontend", "senior-fullstack"],
+      "related_agents": ["frontend-architect"]
+    },
+    "api-integration-specialist": {
+      "name": "api-integration-specialist",
+      "description": "Expert in integrating third-party APIs with proper authentication, error handling, rate limiting, and retry logic.",
+      "category": "development",
+      "tags": ["api", "integration", "oauth", "rest", "graphql", "webhooks"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["senior-backend", "mcp-builder"],
+      "related_agents": ["api-contract-designer", "n8n-architect"]
+    },
+    "senior-architect": {
+      "name": "senior-architect",
+      "description": "Comprehensive software architecture skill for designing scalable, maintainable systems.",
+      "category": "architecture",
+      "tags": ["architecture", "system-design", "patterns", "scalability"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["architecture_diagrammer.py", "dependency_analyzer.py", "tech_stack_evaluator.py"],
+      "dependencies": [],
+      "related_skills": ["cto-advisor", "senior-fullstack"]
+    },
+    "claude-md-architect": {
+      "name": "claude-md-architect",
+      "description": "Strategic guidance for designing future-proof CLAUDE.md project documentation that serves as the 'Constitution' for all development work.",
+      "category": "architecture",
+      "tags": ["claude-md", "documentation", "project-setup", "constitution"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "workflow_phase": "project-setup",
+      "related_skills": ["hooks-setup", "senior-architect"],
+      "triggers_skills": ["hooks-setup", "env-configurator"]
+    },
+    "senior-devops": {
+      "name": "senior-devops",
+      "description": "Comprehensive DevOps skill for CI/CD, infrastructure automation, containerization, and cloud platforms.",
+      "category": "devops",
+      "tags": ["devops", "ci-cd", "docker", "kubernetes", "aws", "gcp", "azure", "terraform"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["pipeline_generator.py", "infrastructure_scaffolder.py", "deployment_validator.py"],
+      "dependencies": [],
+      "related_skills": ["ci-cd-architect", "env-configurator"],
+      "related_agents": ["devops-architect"]
+    },
+    "ci-cd-architect": {
+      "name": "ci-cd-architect",
+      "description": "Generates CI/CD pipeline configurations for GitHub Actions, GitLab CI, Jenkins, and other platforms.",
+      "category": "devops",
+      "tags": ["ci-cd", "github-actions", "gitlab-ci", "jenkins", "pipelines"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["senior-devops", "hooks-setup"],
+      "related_agents": ["devops-architect"]
+    },
+    "hooks-setup": {
+      "name": "hooks-setup",
+      "description": "Meta-skill that orchestrates git-hooks-setup, claude-code-hooks, and security-scanning-hooks for comprehensive code quality.",
+      "category": "devops",
+      "tags": ["hooks", "orchestrator", "code-quality"],
+      "version": "2.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "workflow_phase": "project-setup",
+      "triggered_by": ["claude-md-architect"],
+      "orchestrates": ["git-hooks-setup", "claude-code-hooks", "security-scanning-hooks"],
+      "related_skills": ["claude-md-architect", "ci-cd-architect", "git-hooks-setup", "claude-code-hooks", "security-scanning-hooks"],
+      "auto_trigger": {
+        "after": ["claude-md-architect"],
+        "on_event": ["CLAUDE.md created", "CLAUDE.md modified"]
+      }
+    },
+    "git-hooks-setup": {
+      "name": "git-hooks-setup",
+      "description": "Set up Git hooks (Husky, lint-staged, commitlint) for commit-time code quality enforcement.",
+      "category": "devops",
+      "tags": ["hooks", "husky", "lint-staged", "commitlint", "git", "pre-commit"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["setup_hooks.py"],
+      "dependencies": [],
+      "workflow_phase": "project-setup",
+      "parent_skill": "hooks-setup",
+      "related_skills": ["hooks-setup", "ci-cd-architect"]
+    },
+    "claude-code-hooks": {
+      "name": "claude-code-hooks",
+      "description": "Configure Claude Code PostToolUse hooks for real-time auto-linting after Edit/Write operations.",
+      "category": "devops",
+      "tags": ["hooks", "claude-code", "posttooluse", "auto-linting", "real-time"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["setup_claude_hooks.py"],
+      "dependencies": [],
+      "workflow_phase": "project-setup",
+      "parent_skill": "hooks-setup",
+      "related_skills": ["hooks-setup", "senior-frontend", "senior-backend"]
+    },
+    "security-scanning-hooks": {
+      "name": "security-scanning-hooks",
+      "description": "Configure security scanning hooks for vulnerability detection and secrets scanning using semgrep, bandit, and gitleaks.",
+      "category": "devops",
+      "tags": ["hooks", "security", "semgrep", "bandit", "gitleaks", "secrets", "vulnerability"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "workflow_phase": "project-setup",
+      "parent_skill": "hooks-setup",
+      "related_skills": ["hooks-setup", "senior-security"],
+      "related_agents": ["security-architect"]
+    },
+    "dependency-installer": {
+      "name": "dependency-installer",
+      "description": "Automates dependency installation for Node.js, Python, Ruby, and other projects.",
+      "category": "devops",
+      "tags": ["dependencies", "npm", "pip", "bundler", "package-manager"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["senior-devops"]
+    },
+    "env-configurator": {
+      "name": "env-configurator",
+      "description": "Generates .env template files from CLAUDE.md environment variables section.",
+      "category": "devops",
+      "tags": ["environment", "env", "configuration", "secrets"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "workflow_phase": "project-setup",
+      "triggered_by": ["claude-md-architect"],
+      "related_skills": ["claude-md-architect", "senior-devops"]
+    },
+    "senior-security": {
+      "name": "senior-security",
+      "description": "Comprehensive security engineering skill for application security, penetration testing, security architecture, and compliance auditing.",
+      "category": "security",
+      "tags": ["security", "owasp", "penetration-testing", "compliance", "crypto"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["security_auditor.py", "threat_modeler.py", "compliance_checker.py"],
+      "dependencies": [],
+      "related_skills": ["code-reviewer"],
+      "related_agents": ["security-architect"]
+    },
+    "senior-data-engineer": {
+      "name": "senior-data-engineer",
+      "description": "Data engineering skill for building scalable data pipelines, ETL/ELT systems, and data infrastructure.",
+      "category": "data",
+      "tags": ["data-engineering", "etl", "spark", "airflow", "dbt", "kafka", "pipelines"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["pipeline_scaffolder.py", "data_quality_checker.py", "schema_validator.py"],
+      "dependencies": [],
+      "related_skills": ["senior-data-scientist", "senior-backend"],
+      "related_agents": ["database-architect"]
+    },
+    "senior-data-scientist": {
+      "name": "senior-data-scientist",
+      "description": "Data science skill for statistical modeling, experimentation, causal inference, and advanced analytics.",
+      "category": "data",
+      "tags": ["data-science", "statistics", "ml", "experimentation", "ab-testing", "analytics"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["experiment_designer.py", "model_evaluator.py", "feature_engineer.py"],
+      "dependencies": [],
+      "related_skills": ["senior-data-engineer"]
+    },
+    "ui-design-system": {
+      "name": "ui-design-system",
+      "description": "UI design system toolkit including design token generation, component documentation, responsive design calculations.",
+      "category": "design",
+      "tags": ["design-system", "tokens", "components", "responsive", "handoff"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["ux-researcher-designer", "senior-frontend", "frontend-design"],
+      "related_agents": ["frontend-architect", "experience-analyzer"]
+    },
+    "ux-researcher-designer": {
+      "name": "ux-researcher-designer",
+      "description": "UX research and design toolkit including data-driven persona generation, journey mapping, usability testing frameworks.",
+      "category": "design",
+      "tags": ["ux", "research", "personas", "journey-mapping", "usability"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["ui-design-system", "frontend-design"],
+      "related_agents": ["experience-analyzer"]
+    },
+    "artifacts-builder": {
+      "name": "artifacts-builder",
+      "description": "Suite of tools for creating elaborate, multi-component claude.ai HTML artifacts using modern frontend web technologies.",
+      "category": "design",
+      "tags": ["artifacts", "react", "tailwind", "shadcn", "components"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["theme-factory", "frontend-design"]
+    },
+    "theme-factory": {
+      "name": "theme-factory",
+      "description": "Toolkit for styling artifacts with a theme. 10 pre-set themes with colors/fonts that can be applied to any artifact.",
+      "category": "design",
+      "tags": ["themes", "styling", "colors", "fonts", "branding"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["artifacts-builder", "frontend-design"]
+    },
+    "code-reviewer": {
+      "name": "code-reviewer",
+      "description": "Comprehensive code review skill for TypeScript, JavaScript, Python, Swift, Kotlin, Go.",
+      "category": "quality",
+      "tags": ["code-review", "quality", "best-practices", "security-scanning"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["pr_analyzer.py", "code_quality_checker.py", "review_report_generator.py"],
+      "dependencies": [],
+      "prerequisites": ["implementation-orchestrator"],
+      "workflow_phase": "pre-merge",
+      "related_skills": ["senior-security", "acceptance-validator"],
+      "related_agents": ["security-architect", "test-strategy-planner", "implementation-test-engineer"]
+    },
+    "acceptance-validator": {
+      "name": "acceptance-validator",
+      "description": "The project's 'Gatekeeper' for quality assurance. Defines Acceptance Criteria (AC) and validates implementations.",
+      "category": "quality",
+      "tags": ["qa", "validation", "acceptance-criteria", "gherkin", "gatekeeper"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "prerequisites": ["code-reviewer"],
+      "workflow_phase": "qa-validation",
+      "related_skills": ["preflight-check", "code-reviewer"],
+      "related_agents": ["test-strategy-planner"],
+      "mandatory_gate": true
+    },
+    "preflight-check": {
+      "name": "preflight-check",
+      "description": "Performs comprehensive pre-flight validation before flow-feature-build begins.",
+      "category": "quality",
+      "tags": ["validation", "preflight", "safety-gate", "context-validation"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "workflow_phase": "pre-implementation",
+      "triggers_skills_on_failure": ["dependency-installer"],
+      "related_skills": ["acceptance-validator", "implementation-orchestrator"],
+      "auto_trigger": {
+        "on_event": ["flow-feature-build start"]
+      }
+    },
+    "content-creator": {
+      "name": "content-creator",
+      "description": "Create SEO-optimized marketing content with consistent brand voice.",
+      "category": "content",
+      "tags": ["content", "seo", "marketing", "brand-voice", "social-media"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["seo-optimizer", "content-research-writer"]
+    },
+    "content-research-writer": {
+      "name": "content-research-writer",
+      "description": "Assists in writing high-quality content by conducting research, adding citations, improving hooks.",
+      "category": "content",
+      "tags": ["writing", "research", "citations", "content", "editing"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["content-creator", "seo-optimizer"]
+    },
+    "seo-optimizer": {
+      "name": "seo-optimizer",
+      "description": "Search Engine Optimization specialist for content strategy, technical SEO, keyword research.",
+      "category": "content",
+      "tags": ["seo", "keywords", "meta-tags", "schema-markup", "web-vitals"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["content-creator", "content-research-writer"]
+    },
+    "skill-creator": {
+      "name": "skill-creator",
+      "description": "Skill creation and iteration guide. Used for creating, updating, or understanding skills.",
+      "category": "framework",
+      "tags": ["skills", "creation", "framework", "meta"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["init_skill.py"],
+      "dependencies": [],
+      "related_skills": ["agent-librarian", "agent-development"]
+    },
+    "agent-librarian": {
+      "name": "agent-librarian",
+      "description": "The framework's 'Librarian'. Find and install new specialist agents, or create custom agents through an interview process.",
+      "category": "framework",
+      "tags": ["agents", "librarian", "discovery", "creation"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["skill-creator", "agent-development"]
+    },
+    "agent-development": {
+      "name": "agent-development",
+      "description": "Guidance on agent structure, system prompts, triggering conditions, and agent development best practices.",
+      "category": "framework",
+      "tags": ["agents", "development", "prompts", "triggers"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["agent-librarian", "skill-creator"]
+    },
+    "brainstorming": {
+      "name": "brainstorming",
+      "description": "MUST use before any creative work. Explores user intent, requirements and design before implementation.",
+      "category": "framework",
+      "tags": ["brainstorming", "planning", "design", "requirements"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "workflow_phase": "ideation",
+      "related_skills": ["writing-plans"],
+      "mandatory_before": ["implementation"]
+    },
+    "writing-plans": {
+      "name": "writing-plans",
+      "description": "Use when you have a spec or requirements for a multi-step task, before touching code.",
+      "category": "framework",
+      "tags": ["planning", "specs", "implementation", "strategy"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "workflow_phase": "planning",
+      "prerequisites": ["brainstorming"],
+      "related_skills": ["brainstorming", "implementation-orchestrator"]
+    },
+    "implementation-orchestrator": {
+      "name": "implementation-orchestrator",
+      "description": "Coordinates multiple specialist agents during feature implementation to ensure coherent, well-integrated plans.",
+      "category": "framework",
+      "tags": ["orchestration", "coordination", "agents", "plans"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "workflow_phase": "agent-coordination",
+      "prerequisites": ["preflight-check"],
+      "related_skills": ["preflight-check", "writing-plans"]
+    },
+    "cto-advisor": {
+      "name": "cto-advisor",
+      "description": "Technical leadership guidance for engineering teams, architecture decisions, and technology strategy.",
+      "category": "leadership",
+      "tags": ["leadership", "tech-debt", "team-scaling", "metrics", "dora", "strategy"],
+      "version": "1.0.0",
+      "has_scripts": true,
+      "scripts": ["tech_debt_analyzer.py", "team_scaling_calculator.py", "engineering_metrics.py"],
+      "dependencies": [],
+      "related_skills": ["senior-architect"]
+    },
+    "mcp-builder": {
+      "name": "mcp-builder",
+      "description": "Guide for creating high-quality MCP (Model Context Protocol) servers that enable LLMs to interact with external services.",
+      "category": "integrations",
+      "tags": ["mcp", "model-context-protocol", "integrations", "servers", "fastmcp"],
+      "version": "1.0.0",
+      "has_scripts": false,
+      "dependencies": [],
+      "related_skills": ["api-integration-specialist"]
+    }
+  },
+  "search_index": {
+    "by_tag": {
+      "react": ["senior-frontend", "senior-fullstack", "react-best-practices", "artifacts-builder"],
+      "nextjs": ["senior-frontend", "senior-fullstack", "react-best-practices"],
+      "typescript": ["senior-frontend"],
+      "nodejs": ["senior-backend", "senior-fullstack"],
+      "python": ["senior-backend", "senior-data-engineer", "senior-data-scientist"],
+      "api": ["senior-backend", "api-integration-specialist"],
+      "graphql": ["senior-backend", "senior-fullstack"],
+      "security": ["senior-security", "code-reviewer"],
+      "devops": ["senior-devops", "ci-cd-architect"],
+      "ci-cd": ["senior-devops", "ci-cd-architect"],
+      "docker": ["senior-devops"],
+      "kubernetes": ["senior-devops"],
+      "aws": ["senior-devops"],
+      "data": ["senior-data-engineer", "senior-data-scientist"],
+      "ml": ["senior-data-scientist"],
+      "design": ["ui-design-system", "ux-researcher-designer", "frontend-design"],
+      "ux": ["ux-researcher-designer"],
+      "ui": ["ui-design-system", "senior-frontend", "frontend-design"],
+      "testing": ["acceptance-validator", "code-reviewer"],
+      "qa": ["acceptance-validator", "preflight-check"],
+      "content": ["content-creator", "content-research-writer"],
+      "seo": ["seo-optimizer", "content-creator"],
+      "planning": ["brainstorming", "writing-plans"],
+      "agents": ["agent-librarian", "agent-development"],
+      "skills": ["skill-creator"],
+      "architecture": ["senior-architect", "claude-md-architect"],
+      "hooks": ["hooks-setup", "git-hooks-setup", "claude-code-hooks", "security-scanning-hooks"],
+      "themes": ["theme-factory"]
+    },
+    "semantic_patterns": {
+      "need to optimize SQL": ["senior-backend", "senior-data-engineer"],
+      "build a REST API": ["senior-backend", "api-integration-specialist"],
+      "create React components": ["senior-frontend", "frontend-design"],
+      "set up CI/CD": ["senior-devops", "ci-cd-architect"],
+      "security audit": ["senior-security", "code-reviewer"],
+      "design database schema": ["senior-data-engineer"],
+      "improve performance": ["senior-frontend", "react-best-practices", "senior-backend"],
+      "write tests": ["acceptance-validator", "code-reviewer"],
+      "create new skill": ["skill-creator"],
+      "find an agent": ["agent-librarian"],
+      "technical debt": ["cto-advisor"],
+      "team scaling": ["cto-advisor"],
+      "MCP server": ["mcp-builder"],
+      "design system": ["ui-design-system"],
+      "user research": ["ux-researcher-designer"],
+      "content strategy": ["content-creator", "seo-optimizer"]
+    }
+  },
+  "workflow_gates": {
+    "mandatory_skills": {
+      "before_implementation": ["brainstorming"],
+      "before_merge": ["acceptance-validator", "code-reviewer"]
+    },
+    "auto_triggered": {
+      "on_claude_md_change": ["hooks-setup", "env-configurator"],
+      "on_feature_build_start": ["preflight-check"]
+    }
+  },
+  "dependency_graph": {
+    "description": "Skill execution order and dependencies for feature development workflow",
+    "phases": {
+      "project-setup": {
+        "order": 1,
+        "skills": ["claude-md-architect"],
+        "triggers": ["hooks-setup", "env-configurator"]
+      },
+      "ideation": {
+        "order": 2,
+        "skills": ["brainstorming"],
+        "mandatory": true
+      },
+      "planning": {
+        "order": 3,
+        "skills": ["writing-plans"],
+        "prerequisites": ["brainstorming"]
+      },
+      "pre-implementation": {
+        "order": 4,
+        "skills": ["preflight-check"],
+        "auto_trigger": "flow-feature-build start",
+        "on_failure_triggers": ["dependency-installer"]
+      },
+      "agent-coordination": {
+        "order": 5,
+        "skills": ["implementation-orchestrator"],
+        "prerequisites": ["preflight-check"]
+      },
+      "pre-merge": {
+        "order": 6,
+        "skills": ["code-reviewer"],
+        "prerequisites": ["implementation-orchestrator"],
+        "mandatory": true
+      },
+      "qa-validation": {
+        "order": 7,
+        "skills": ["acceptance-validator"],
+        "prerequisites": ["code-reviewer"],
+        "mandatory": true,
+        "is_gate": true
+      }
+    },
+    "execution_order": [
+      "claude-md-architect → hooks-setup, env-configurator",
+      "brainstorming → writing-plans",
+      "preflight-check → implementation-orchestrator",
+      "implementation-orchestrator → code-reviewer",
+      "code-reviewer → acceptance-validator"
+    ]
+  }
+}

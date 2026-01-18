@@ -1,0 +1,285 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "last_updated": "2026-01-17",
+  "description": "Registry of shared mixins for skills DRY compliance",
+
+  "mixins": {
+    "tech-stack-fullstack": {
+      "id": "tech-stack-fullstack",
+      "file": "tech-stack-fullstack.md",
+      "version": "1.0.0",
+      "description": "Full-stack tech stack (TypeScript, React, Node.js, PostgreSQL, Docker, AWS)",
+      "used_by": [
+        "senior-frontend",
+        "senior-backend",
+        "senior-devops",
+        "senior-security",
+        "senior-architect",
+        "senior-fullstack"
+      ],
+      "placeholders": []
+    },
+    "tech-stack-data": {
+      "id": "tech-stack-data",
+      "file": "tech-stack-data.md",
+      "version": "1.0.0",
+      "description": "Data/ML tech stack (Python, Spark, PyTorch, Airflow, BigQuery)",
+      "used_by": [
+        "senior-data-engineer",
+        "senior-data-scientist"
+      ],
+      "placeholders": []
+    },
+    "best-practices-general": {
+      "id": "best-practices-general",
+      "file": "best-practices-general.md",
+      "version": "1.0.0",
+      "description": "General best practices (Code Quality, Performance, Security, Maintainability)",
+      "used_by": [
+        "senior-frontend",
+        "senior-backend",
+        "senior-devops",
+        "senior-security",
+        "senior-architect",
+        "senior-fullstack"
+      ],
+      "placeholders": []
+    },
+    "best-practices-senior": {
+      "id": "best-practices-senior",
+      "file": "best-practices-senior.md",
+      "version": "1.0.0",
+      "description": "Senior-level best practices (Development, Production, Team Leadership)",
+      "used_by": [
+        "senior-data-engineer",
+        "senior-data-scientist"
+      ],
+      "placeholders": []
+    },
+    "senior-responsibilities": {
+      "id": "senior-responsibilities",
+      "file": "senior-responsibilities.md",
+      "version": "1.0.0",
+      "description": "Senior-level responsibilities (Technical Leadership, Strategic Thinking, etc.)",
+      "used_by": [
+        "senior-data-engineer",
+        "senior-data-scientist"
+      ],
+      "placeholders": []
+    },
+    "development-workflow": {
+      "id": "development-workflow",
+      "file": "development-workflow.md",
+      "version": "1.0.0",
+      "description": "Standard development workflow (Setup, Quality Checks, Best Practices)",
+      "used_by": [
+        "senior-frontend",
+        "senior-backend",
+        "senior-devops",
+        "senior-security",
+        "senior-architect",
+        "senior-fullstack"
+      ],
+      "placeholders": [
+        "{{ANALYZER_SCRIPT}}",
+        "{{PATTERN_REFERENCE}}",
+        "{{WORKFLOW_REFERENCE}}",
+        "{{TECHNICAL_REFERENCE}}"
+      ]
+    },
+    "common-commands": {
+      "id": "common-commands",
+      "file": "common-commands.md",
+      "version": "1.0.0",
+      "description": "Common CLI commands for full-stack development",
+      "used_by": [
+        "senior-frontend",
+        "senior-backend",
+        "senior-devops",
+        "senior-security",
+        "senior-architect",
+        "senior-fullstack"
+      ],
+      "placeholders": [
+        "{{ANALYZER_SCRIPT}}",
+        "{{TOOL_SCRIPT}}"
+      ]
+    },
+    "common-commands-data": {
+      "id": "common-commands-data",
+      "file": "common-commands-data.md",
+      "version": "1.0.0",
+      "description": "Common CLI commands for data/ML development",
+      "used_by": [
+        "senior-data-engineer",
+        "senior-data-scientist"
+      ],
+      "placeholders": []
+    },
+    "troubleshooting": {
+      "id": "troubleshooting",
+      "file": "troubleshooting.md",
+      "version": "1.0.0",
+      "description": "Troubleshooting template",
+      "used_by": ["all"],
+      "placeholders": [
+        "{{TECHNICAL_REFERENCE}}"
+      ]
+    },
+    "performance-targets": {
+      "id": "performance-targets",
+      "file": "performance-targets.md",
+      "version": "1.0.0",
+      "description": "Performance SLOs (latency, throughput, availability)",
+      "used_by": [
+        "senior-data-engineer",
+        "senior-data-scientist"
+      ],
+      "placeholders": []
+    },
+    "security-compliance": {
+      "id": "security-compliance",
+      "file": "security-compliance.md",
+      "version": "1.0.0",
+      "description": "Security & compliance checklist (Auth, encryption, GDPR, etc.)",
+      "used_by": [
+        "senior-data-engineer",
+        "senior-data-scientist",
+        "senior-security"
+      ],
+      "placeholders": []
+    },
+    "resources-template": {
+      "id": "resources-template",
+      "file": "resources-template.md",
+      "version": "1.0.0",
+      "description": "Resources section template",
+      "used_by": ["all"],
+      "placeholders": [
+        "{{PATTERN_REFERENCE}}",
+        "{{WORKFLOW_REFERENCE}}",
+        "{{TECHNICAL_REFERENCE}}"
+      ]
+    },
+    "script-capability-template": {
+      "id": "script-capability-template",
+      "file": "script-capability-template.md",
+      "version": "1.0.0",
+      "description": "Template for 3-script capability sections",
+      "used_by": ["all"],
+      "placeholders": [
+        "{{SCRIPT_1_NAME}}",
+        "{{SCRIPT_1_FILE}}",
+        "{{SCRIPT_1_DESC}}",
+        "{{SCRIPT_2_NAME}}",
+        "{{SCRIPT_2_FILE}}",
+        "{{SCRIPT_2_DESC}}",
+        "{{SCRIPT_3_NAME}}",
+        "{{SCRIPT_3_FILE}}",
+        "{{SCRIPT_3_DESC}}"
+      ]
+    },
+    "reference-docs-template": {
+      "id": "reference-docs-template",
+      "file": "reference-docs-template.md",
+      "version": "1.0.0",
+      "description": "Template for reference documentation sections",
+      "used_by": ["all"],
+      "placeholders": [
+        "{{REF_1_TITLE}}",
+        "{{REF_1_FILE}}",
+        "{{REF_2_TITLE}}",
+        "{{REF_2_FILE}}",
+        "{{REF_3_TITLE}}",
+        "{{REF_3_FILE}}"
+      ]
+    }
+  },
+
+  "skill_mixin_mapping": {
+    "senior-frontend": {
+      "mixins": ["tech-stack-fullstack", "best-practices-general", "development-workflow", "common-commands", "troubleshooting", "resources-template"],
+      "placeholder_values": {
+        "ANALYZER_SCRIPT": "bundle_analyzer.py",
+        "TOOL_SCRIPT": "frontend_scaffolder.py",
+        "PATTERN_REFERENCE": "react_patterns.md",
+        "WORKFLOW_REFERENCE": "nextjs_optimization_guide.md",
+        "TECHNICAL_REFERENCE": "frontend_best_practices.md"
+      }
+    },
+    "senior-backend": {
+      "mixins": ["tech-stack-fullstack", "best-practices-general", "development-workflow", "common-commands", "troubleshooting", "resources-template"],
+      "placeholder_values": {
+        "ANALYZER_SCRIPT": "database_migration_tool.py",
+        "TOOL_SCRIPT": "api_load_tester.py",
+        "PATTERN_REFERENCE": "api_design_patterns.md",
+        "WORKFLOW_REFERENCE": "database_optimization_guide.md",
+        "TECHNICAL_REFERENCE": "backend_security_practices.md"
+      }
+    },
+    "senior-devops": {
+      "mixins": ["tech-stack-fullstack", "best-practices-general", "development-workflow", "common-commands", "troubleshooting", "resources-template"],
+      "placeholder_values": {
+        "ANALYZER_SCRIPT": "terraform_scaffolder.py",
+        "TOOL_SCRIPT": "deployment_manager.py",
+        "PATTERN_REFERENCE": "cicd_pipeline_guide.md",
+        "WORKFLOW_REFERENCE": "infrastructure_as_code.md",
+        "TECHNICAL_REFERENCE": "deployment_strategies.md"
+      }
+    },
+    "senior-security": {
+      "mixins": ["tech-stack-fullstack", "best-practices-general", "development-workflow", "common-commands", "troubleshooting", "resources-template"],
+      "placeholder_values": {
+        "ANALYZER_SCRIPT": "security_auditor.py",
+        "TOOL_SCRIPT": "pentest_automator.py",
+        "PATTERN_REFERENCE": "security_architecture_patterns.md",
+        "WORKFLOW_REFERENCE": "penetration_testing_guide.md",
+        "TECHNICAL_REFERENCE": "cryptography_implementation.md"
+      }
+    },
+    "senior-data-engineer": {
+      "mixins": ["tech-stack-data", "best-practices-senior", "senior-responsibilities", "common-commands-data", "performance-targets", "security-compliance"],
+      "placeholder_values": {}
+    },
+    "senior-data-scientist": {
+      "mixins": ["tech-stack-data", "best-practices-senior", "senior-responsibilities", "common-commands-data", "performance-targets", "security-compliance"],
+      "placeholder_values": {}
+    },
+    "senior-architect": {
+      "mixins": ["tech-stack-fullstack", "best-practices-general", "development-workflow", "common-commands", "troubleshooting", "resources-template"],
+      "placeholder_values": {
+        "ANALYZER_SCRIPT": "project_architect.py",
+        "TOOL_SCRIPT": "dependency_analyzer.py",
+        "PATTERN_REFERENCE": "architecture_patterns.md",
+        "WORKFLOW_REFERENCE": "system_design_workflows.md",
+        "TECHNICAL_REFERENCE": "tech_decision_guide.md"
+      }
+    },
+    "senior-fullstack": {
+      "mixins": ["tech-stack-fullstack", "best-practices-general", "development-workflow", "common-commands", "troubleshooting", "resources-template"],
+      "placeholder_values": {
+        "ANALYZER_SCRIPT": "project_scaffolder.py",
+        "TOOL_SCRIPT": "code_quality_analyzer.py",
+        "PATTERN_REFERENCE": "tech_stack_guide.md",
+        "WORKFLOW_REFERENCE": "architecture_patterns.md",
+        "TECHNICAL_REFERENCE": "development_workflows.md"
+      }
+    },
+    "_test-mixin-build": {
+      "mixins": ["tech-stack-fullstack", "troubleshooting", "resources-template"],
+      "placeholder_values": {
+        "PATTERN_REFERENCE": "test_patterns.md",
+        "WORKFLOW_REFERENCE": "test_workflows.md",
+        "TECHNICAL_REFERENCE": "test_reference.md"
+      }
+    }
+  },
+
+  "statistics": {
+    "total_mixins": 14,
+    "skills_using_mixins": 8,
+    "lines_saved_per_skill": 80,
+    "total_duplication_eliminated": "~640 lines across 8 senior-* skills"
+  }
+}

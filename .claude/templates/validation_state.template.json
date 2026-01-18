@@ -1,0 +1,12 @@
+{
+  "$schema": "./validation_state.schema.json",
+  "_description": "Template for tracking QA validation iteration state. Copy to .claude/docs/{feature}/validation_state.json",
+  "feature_name": "{FEATURE_NAME}",
+  "pr_number": null,
+  "current_iteration": 1,
+  "max_iterations": 3,
+  "status": "pending",
+  "validation_history": [],
+  "created_at": null,
+  "updated_at": null
+}

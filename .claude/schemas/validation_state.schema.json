@@ -1,0 +1,120 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://informatik-ai.dev/schemas/validation_state.schema.json",
+  "title": "Validation State",
+  "description": "Schema for QA validation state tracking (flow-qa-validate, flow-feedback-fix)",
+  "type": "object",
+
+  "required": [
+    "feature_name",
+    "pr_number",
+    "current_iteration",
+    "max_iterations",
+    "status",
+    "validation_history",
+    "created_at",
+    "updated_at"
+  ],
+
+  "properties": {
+    "feature_name": {
+      "type": "string",
+      "description": "Name of the feature being validated",
+      "minLength": 1
+    },
+    "pr_number": {
+      "type": "integer",
+      "description": "Pull request number",
+      "minimum": 1
+    },
+    "current_iteration": {
+      "type": "integer",
+      "description": "Current validation iteration (1-based)",
+      "minimum": 1
+    },
+    "max_iterations": {
+      "type": "integer",
+      "description": "Maximum allowed iterations before escalation",
+      "minimum": 1,
+      "default": 3
+    },
+    "status": {
+      "type": "string",
+      "description": "Current validation status",
+      "enum": ["pending", "in_progress", "passed", "failed", "escalated"]
+    },
+    "validation_history": {
+      "type": "array",
+      "description": "History of all validation attempts",
+      "items": {
+        "type": "object",
+        "required": ["iteration", "status", "timestamp"],
+        "properties": {
+          "iteration": {
+            "type": "integer",
+            "minimum": 1
+          },
+          "status": {
+            "type": "string",
+            "enum": ["passed", "failed", "escalated"]
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "issues": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "type": { "type": "string", "enum": ["code_quality", "security", "acceptance", "performance"] },
+                "severity": { "type": "string", "enum": ["critical", "major", "minor"] },
+                "description": { "type": "string" },
+                "file": { "type": "string" },
+                "line": { "type": "integer" },
+                "resolved": { "type": "boolean", "default": false }
+              },
+              "required": ["id", "type", "severity", "description"]
+            }
+          },
+          "agents_invoked": {
+            "type": "array",
+            "items": { "type": "string" }
+          },
+          "skills_invoked": {
+            "type": "array",
+            "items": { "type": "string" }
+          }
+        }
+      }
+    },
+    "escalation_issue": {
+      "type": "integer",
+      "description": "GitHub issue number for escalation (if escalated)",
+      "minimum": 1
+    },
+    "escalation_reason": {
+      "type": "string",
+      "description": "Reason for escalation",
+      "enum": ["max_iterations_reached", "critical_security_issue", "manual_escalation"]
+    },
+    "persistent_issues": {
+      "type": "array",
+      "description": "Issues that persisted across multiple iterations",
+      "items": { "type": "string" }
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp when state file was created"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of last update"
+    }
+  },
+
+  "additionalProperties": false
+}

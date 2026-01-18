@@ -1,0 +1,18 @@
+#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+echo "Running pre-push checks..."
+
+# Type checking
+echo "Type checking..."
+pnpm tsc --noEmit || exit 1
+
+# Run tests
+echo "Running tests..."
+pnpm test --run || exit 1
+
+# Build check (optional, uncomment if needed)
+# echo "Build check..."
+# pnpm build || exit 1
+
+echo "Pre-push checks passed!"

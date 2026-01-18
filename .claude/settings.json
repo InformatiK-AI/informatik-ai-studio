@@ -1,0 +1,56 @@
+{
+  "$schema": "https://raw.githubusercontent.com/anthropics/claude-code/main/schemas/settings.json",
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": {
+          "toolName": "Edit|Write",
+          "filePath": "\\.(ts|tsx)$"
+        },
+        "commands": [
+          {
+            "command": "pnpm eslint --fix {{filePath}}",
+            "timeout": 30000,
+            "onError": "warn"
+          },
+          {
+            "command": "pnpm prettier --write {{filePath}}",
+            "timeout": 10000,
+            "onError": "ignore"
+          }
+        ]
+      },
+      {
+        "matcher": {
+          "toolName": "Edit|Write",
+          "filePath": "\\.(js|jsx|mjs|cjs)$"
+        },
+        "commands": [
+          {
+            "command": "pnpm eslint --fix {{filePath}}",
+            "timeout": 30000,
+            "onError": "warn"
+          },
+          {
+            "command": "pnpm prettier --write {{filePath}}",
+            "timeout": 10000,
+            "onError": "ignore"
+          }
+        ]
+      },
+      {
+        "matcher": {
+          "toolName": "Edit|Write",
+          "filePath": "\\.(json|md|css|scss)$"
+        },
+        "commands": [
+          {
+            "command": "pnpm prettier --write {{filePath}}",
+            "timeout": 10000,
+            "onError": "ignore"
+          }
+        ]
+      }
+    ]
+  }
+}

@@ -1,0 +1,153 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "version": "1.0.0",
+  "last_updated": "2026-01-17",
+  "description": "Central index of reference materials for agents and skills",
+
+  "reference_categories": {
+    "api-examples": {
+      "description": "API design examples and patterns",
+      "path": "api-examples/",
+      "files": [
+        {
+          "file": "openapi-example.md",
+          "title": "OpenAPI 3.1 Example",
+          "description": "Full example of a RESTful API specification using OpenAPI 3.1",
+          "used_by_agents": ["api-contract-designer"],
+          "used_by_skills": ["senior-backend", "api-integration-specialist"]
+        },
+        {
+          "file": "graphql-example.md",
+          "title": "GraphQL Schema Example",
+          "description": "Complete GraphQL schema with queries, mutations, and subscriptions",
+          "used_by_agents": ["api-contract-designer"],
+          "used_by_skills": ["senior-backend", "senior-fullstack"]
+        },
+        {
+          "file": "grpc-example.md",
+          "title": "gRPC Example",
+          "description": "Protocol buffer definitions and gRPC service examples",
+          "used_by_agents": ["api-contract-designer"],
+          "used_by_skills": ["senior-backend"]
+        },
+        {
+          "file": "trpc-example.md",
+          "title": "tRPC Example",
+          "description": "End-to-end typesafe API with tRPC",
+          "used_by_agents": ["api-contract-designer"],
+          "used_by_skills": ["senior-fullstack"]
+        }
+      ]
+    },
+    "deployment-examples": {
+      "description": "CI/CD and deployment configuration examples",
+      "path": "deployment-examples/",
+      "files": [
+        {
+          "file": "github-actions-vercel.md",
+          "title": "GitHub Actions + Vercel",
+          "description": "CI/CD pipeline for Vercel deployment",
+          "used_by_agents": ["devops-architect"],
+          "used_by_skills": ["senior-devops", "ci-cd-architect"]
+        },
+        {
+          "file": "gitlab-ci-aws-ecs.md",
+          "title": "GitLab CI + AWS ECS",
+          "description": "GitLab CI pipeline for AWS ECS deployment",
+          "used_by_agents": ["devops-architect"],
+          "used_by_skills": ["senior-devops", "ci-cd-architect"]
+        },
+        {
+          "file": "docker-compose-self-hosted.md",
+          "title": "Docker Compose Self-Hosted",
+          "description": "Self-hosted deployment with Docker Compose",
+          "used_by_agents": ["devops-architect"],
+          "used_by_skills": ["senior-devops"]
+        },
+        {
+          "file": "kubernetes.md",
+          "title": "Kubernetes Deployment",
+          "description": "Full Kubernetes deployment manifests",
+          "used_by_agents": ["devops-architect"],
+          "used_by_skills": ["senior-devops"]
+        }
+      ]
+    }
+  },
+
+  "agent_to_reference_map": {
+    "api-contract-designer": {
+      "primary_references": [
+        "api-examples/openapi-example.md",
+        "api-examples/graphql-example.md",
+        "api-examples/grpc-example.md",
+        "api-examples/trpc-example.md"
+      ],
+      "conditional_references": {
+        "technology.rest": ["api-examples/openapi-example.md"],
+        "technology.graphql": ["api-examples/graphql-example.md"],
+        "technology.grpc": ["api-examples/grpc-example.md"],
+        "technology.trpc": ["api-examples/trpc-example.md"]
+      }
+    },
+    "devops-architect": {
+      "primary_references": [
+        "deployment-examples/github-actions-vercel.md",
+        "deployment-examples/gitlab-ci-aws-ecs.md",
+        "deployment-examples/docker-compose-self-hosted.md",
+        "deployment-examples/kubernetes.md"
+      ],
+      "conditional_references": {
+        "ci_platform.github_actions": ["deployment-examples/github-actions-vercel.md"],
+        "ci_platform.gitlab_ci": ["deployment-examples/gitlab-ci-aws-ecs.md"],
+        "deployment.docker_compose": ["deployment-examples/docker-compose-self-hosted.md"],
+        "deployment.kubernetes": ["deployment-examples/kubernetes.md"]
+      }
+    },
+    "database-architect": {
+      "primary_references": [],
+      "note": "Uses skill references from senior-data-engineer"
+    }
+  },
+
+  "skill_to_reference_map": {
+    "senior-backend": {
+      "own_references": [
+        "references/api_design_patterns.md",
+        "references/database_optimization_guide.md",
+        "references/backend_security_practices.md"
+      ],
+      "shared_references": [
+        "../agents/references/api-examples/openapi-example.md",
+        "../agents/references/api-examples/graphql-example.md"
+      ]
+    },
+    "senior-devops": {
+      "own_references": [
+        "references/cicd_pipeline_guide.md",
+        "references/infrastructure_as_code.md",
+        "references/deployment_strategies.md"
+      ],
+      "shared_references": [
+        "../agents/references/deployment-examples/github-actions-vercel.md",
+        "../agents/references/deployment-examples/gitlab-ci-aws-ecs.md",
+        "../agents/references/deployment-examples/docker-compose-self-hosted.md",
+        "../agents/references/deployment-examples/kubernetes.md"
+      ]
+    },
+    "ci-cd-architect": {
+      "own_references": [],
+      "shared_references": [
+        "../agents/references/deployment-examples/github-actions-vercel.md",
+        "../agents/references/deployment-examples/gitlab-ci-aws-ecs.md"
+      ]
+    }
+  },
+
+  "consolidation_notes": {
+    "canonical_location": "agents/references/",
+    "reason": "Agents are the primary consumers of these examples during planning phase",
+    "access_pattern": "Skills can reference agent references via relative paths",
+    "duplication_avoided": "8 reference files are now single-sourced instead of potentially duplicated across skills"
+  }
+}

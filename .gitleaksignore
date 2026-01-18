@@ -1,0 +1,15 @@
+# Gitleaks ignore patterns for InformatiK-AI Studio
+
+# Example/template files with placeholder values
+.env.example
+.env.template
+
+# Test fixtures with fake credentials
+tests/fixtures/**
+**/__mocks__/**
+
+# Documentation examples
+docs/**/*.md
+
+# Known false positives (add specific commit hashes or file:line as needed)
+# Example: abc123:path/to/file.ts:42
