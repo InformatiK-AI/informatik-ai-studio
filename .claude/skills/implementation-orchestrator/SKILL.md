@@ -22,8 +22,9 @@ This skill is **automatically invoked** by `flow-feature-build.md` during Phase 
 
 **Manual Invocation:**
 You can also invoke this skill manually to validate existing plans:
+
 ```
-"Use implementation-orchestrator to validate plans in .claude/doc/{feature_name}/"
+"Use implementation-orchestrator to validate plans in .claude/docs/{feature_name}/"
 ```
 
 ## Workflow
@@ -35,7 +36,7 @@ You can also invoke this skill manually to validate existing plans:
    - Identify which architectural layers are affected (database, API, backend, frontend, UI)
 
 2. **Detect Agent Plans:**
-   - Scan `.claude/doc/{FEATURE_NAME}/` directory for existing plans:
+   - Scan `.claude/docs/{FEATURE_NAME}/` directory for existing plans:
      - `database.md` → database-architect was invoked
      - `api_contract.md` → api-contract-designer was invoked
      - `backend.md` → domain-logic-architect was invoked
@@ -49,10 +50,11 @@ You can also invoke this skill manually to validate existing plans:
 ### Phase 2: Coherence Validation
 
 1. **Invoke Validation Script:**
+
    ```python
    python3 .claude/skills/implementation-orchestrator/scripts/validate_plans.py \
      --feature "{FEATURE_NAME}" \
-     --plans-dir ".claude/doc/{FEATURE_NAME}/"
+     --plans-dir ".claude/docs/{FEATURE_NAME}/"
    ```
 
 2. **Cross-Reference Validation Checks:**
@@ -100,10 +102,11 @@ You can also invoke this skill manually to validate existing plans:
 ### Phase 3: Orchestration & Execution Order
 
 1. **Invoke Orchestration Script:**
+
    ```python
    python3 .claude/skills/implementation-orchestrator/scripts/orchestrate.py \
      --feature "{FEATURE_NAME}" \
-     --plans-dir ".claude/doc/{FEATURE_NAME}/"
+     --plans-dir ".claude/docs/{FEATURE_NAME}/"
    ```
 
 2. **Define Execution Order (DAG):**
@@ -146,11 +149,12 @@ You can also invoke this skill manually to validate existing plans:
 ### Phase 4: Unified Plan Generation
 
 1. **Invoke Plan Generation Script:**
+
    ```python
    python3 .claude/skills/implementation-orchestrator/scripts/generate_unified_plan.py \
      --feature "{FEATURE_NAME}" \
-     --plans-dir ".claude/doc/{FEATURE_NAME}/" \
-     --output ".claude/doc/{FEATURE_NAME}/implementation_plan.md"
+     --plans-dir ".claude/docs/{FEATURE_NAME}/" \
+     --output ".claude/docs/{FEATURE_NAME}/implementation_plan.md"
    ```
 
 2. **Synthesize Master Plan:**
@@ -161,30 +165,49 @@ You can also invoke this skill manually to validate existing plans:
    # Unified Implementation Plan: {FEATURE_NAME}
 
    ## Validation Status
+
    [PASS/WARNINGS/FAIL with details]
 
    ## Execution Order (DAG)
+
    [Step-by-step sequence with dependencies]
 
    ## File Changes Summary
+
    [All files to create/modify across all layers]
 
    ## Cross-Layer Integration Points
+
    [How database connects to API, API to backend, backend to frontend]
 
    ## Test Strategy
+
    [Tests required at each layer, integration tests]
 
    ## Implementation Checkpoints
+
    [Verification steps after each phase]
 
    ## Warnings & Recommendations
+
    [Any coherence warnings or best practice suggestions]
    ```
 
 3. **Save Unified Plan:**
-   - Write to `.claude/doc/{FEATURE_NAME}/implementation_plan.md`
-   - This becomes the authoritative guide for implementation
+
+   **Primary Method (Script-Based):**
+   - The `generate_unified_plan.py` script (invoked in Step 1) writes the file automatically
+   - Output path: `.claude/docs/{FEATURE_NAME}/implementation_plan.md`
+   - Verify the file was created successfully
+
+   **Fallback (If Script Missing or Fails):**
+   - If the script doesn't exist or fails, use the Write tool to create the file manually
+   - Use the template structure from Step 2 above
+   - **CRITICAL**: Do NOT skip this step - the unified plan file MUST exist for implementation to proceed
+
+   **Result:**
+   - The unified plan becomes the authoritative guide for implementation
+   - Downstream commands (flow-feature-build) depend on this file existing
 
 ### Phase 5: User Decision
 
@@ -198,6 +221,7 @@ You can also invoke this skill manually to validate existing plans:
 2. **For WARNINGS or FAIL:**
 
    Ask user:
+
    ```
    Options:
    a) Fix plans and re-validate
@@ -217,12 +241,14 @@ You can also invoke this skill manually to validate existing plans:
 **Scenario:** User authentication feature involving database, API, backend, frontend
 
 **Detected Plans:**
+
 - `database.md` (users table, sessions table)
 - `api_contract.md` (POST /auth/login, POST /auth/register)
 - `backend.md` (AuthService, JWT handling)
 - `frontend.md` (LoginForm, useAuth hook)
 
 **Validation:**
+
 - ✅ Users table fields match API request schemas
 - ✅ JWT token format consistent across API contract and backend
 - ⚠️ Warning: Password field in database is `password_hash` but API uses `password` (acceptable, transformation in backend)
@@ -231,6 +257,7 @@ You can also invoke this skill manually to validate existing plans:
 **Result:** WARNINGS (1 warning, acceptable)
 
 **Unified Plan:**
+
 ```
 Step 1: Database - Create users and sessions tables
 Step 2: API - Define /auth/login and /auth/register endpoints
@@ -245,16 +272,19 @@ Step 4: Frontend - Build LoginForm, integrate with API
 **Scenario:** Email notification service (no database or frontend changes)
 
 **Detected Plans:**
+
 - `api_contract.md` (POST /notifications/send)
 - `backend.md` (EmailService, SMTP integration)
 
 **Validation:**
+
 - ✅ API endpoint matches backend EmailService handler
 - ✅ Request schema (to, subject, body) matches backend implementation
 
 **Result:** PASS
 
 **Unified Plan:**
+
 ```
 Step 1: API - Define /notifications/send endpoint
 Step 2: Backend - Implement EmailService, configure SMTP
@@ -267,11 +297,13 @@ Step 2: Backend - Implement EmailService, configure SMTP
 **Scenario:** E-commerce cart feature with schema mismatch
 
 **Detected Plans:**
+
 - `database.md` (cart table with `user_id: UUID`)
 - `api_contract.md` (GET /cart expects `userId: string` in query params)
 - `backend.md` (CartService uses `user_identifier: int`)
 
 **Validation:**
+
 - ❌ FAIL: Database uses UUID, API uses string, Backend uses int
 - ❌ FAIL: Field naming inconsistent (user_id vs userId vs user_identifier)
 
@@ -332,6 +364,7 @@ The orchestrator is invoked in **Phase 1.5: Plan Validation Gate** of `flow-feat
 ## Changelog
 
 ### v1.0.0 (2026-01-13)
+
 - Initial implementation
 - Cross-layer validation (database ↔ API ↔ backend ↔ frontend)
 - DAG-based execution ordering

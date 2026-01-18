@@ -1,6 +1,6 @@
 #
 
-# Task: MD-Architect - CLAUDE.md Creation & Maintenance (v2.0)
+# Task: MD-Architect - CLAUDE.md Creation & Maintenance (v2.2)
 
 # Argument: $ARGUMENTS (mode: create|audit|improve|recreate|migrate-modular)
 
@@ -22,7 +22,7 @@
 
 This command invokes the `claude-md-architect` skill to create, audit, or improve CLAUDE.md files - the project's "constitution" that defines architecture, workflows, and agent coordination.
 
-**v2.0 Changes**: Modular architecture is now the default for all projects.
+**v2.2 Changes**: Session file creation now uses explicit Write instruction to ensure files are properly created.
 
 ## Usage
 
@@ -83,7 +83,6 @@ All projects use modular architecture. No user prompts required.
    ```
 
 3. **For existing CLAUDE.md (audit/improve modes):**
-
    - If project has monolithic CLAUDE.md > 300 lines
    - Automatically trigger migration logic
    - Extract sections to modular files
@@ -91,21 +90,22 @@ All projects use modular architecture. No user prompts required.
 4. **Migration Logic (MODE == "migrate-modular" or monolithic detected):**
 
    a) **Analyze existing CLAUDE.md sections:**
-      - Identify sections >50 lines (candidates for extraction)
-      - Map sections to target files using migration table
+   - Identify sections >50 lines (candidates for extraction)
+   - Map sections to target files using migration table
 
    b) **Present migration plan to user:**
-      ```
-      Migration Plan:
-      ├── [code_standards] (75 lines) → .claude/rules/code-standards.md
-      ├── [testing_requirements] (60 lines) → .claude/rules/testing-policy.md
-      ├── [security_requirements] (45 lines) → .claude/rules/security-policy.md
-      ├── [workflow] (30 lines) → .claude/rules/git-workflow.md
-      ├── Database schema (100 lines) → .claude/docs/architecture/database-schema.md
-      └── API contracts (80 lines) → .claude/docs/architecture/api-contracts.md
 
-      Estimated result: CLAUDE.md reduced from 850 → 180 lines
-      ```
+   ```
+   Migration Plan:
+   ├── [code_standards] (75 lines) → .claude/rules/code-standards.md
+   ├── [testing_requirements] (60 lines) → .claude/rules/testing-policy.md
+   ├── [security_requirements] (45 lines) → .claude/rules/security-policy.md
+   ├── [workflow] (30 lines) → .claude/rules/git-workflow.md
+   ├── Database schema (100 lines) → .claude/docs/architecture/database-schema.md
+   └── API contracts (80 lines) → .claude/docs/architecture/api-contracts.md
+
+   Estimated result: CLAUDE.md reduced from 850 → 180 lines
+   ```
 
    c) **Get user approval before proceeding**
 
@@ -258,7 +258,6 @@ All projects use modular architecture. No user prompts required.
    - If no: Remind the user they can run `/skill hooks-setup` later
 
 2. **Create initial directories:**
-
    - Create `.claude/agents/` directory
    - Create `.claude/sessions/` directory
    - Create `.claude/logs/` directory
@@ -326,14 +325,15 @@ The following phases execute unconditionally for ALL modes (create, audit, impro
    ```
    SESSION_TIMESTAMP = format(current_timestamp, "YYYYMMDD_HHmmss")
    SESSION_FILE = ".claude/sessions/context_session_md_architect_{SESSION_TIMESTAMP}.md"
-
-   Create SESSION_FILE with content:
    ```
+
+   **IMPORTANT**: Use the Write tool to create the session file:
 
    ```markdown
    # MD-Architect Session
 
    ## Metadata
+
    - Mode: {MODE}
    - Architecture: {ARCHITECTURE_MODE}
    - Timestamp: {START_TIME}
@@ -342,31 +342,42 @@ The following phases execute unconditionally for ALL modes (create, audit, impro
    ## Files Created
 
    ### Core File
+
    - CLAUDE.md (lines: {LINE_COUNT})
 
    ### Auto-Loaded Rules
-   {For each file in .claude/rules/*.md:}
+
+   {For each file in .claude/rules/\*.md:}
+
    - {file_path}
 
    ### Path-Specific Rules
+
    {For each file in .claude/rules/domain/:}
+
    - {file_path} (paths: {frontmatter.paths})
 
    ### On-Demand Docs
+
    {For each file in .claude/docs/:}
+
    - {file_path}
 
    ## Modular Index
+
    {Copy of [modular_index] section from CLAUDE.md for reference}
 
    ## Session Log
+
    - {START_TIME}: Session started with mode={MODE}
    - {timestamp}: Architecture mode determined: {ARCHITECTURE_MODE}
    - {timestamp}: Files generated: {count}
    - {END_TIME}: Session completed with status={TASK_STATUS}
    ```
 
-2. **Log Session Creation:**
+   **CRITICAL**: Do NOT skip this step. The session file MUST be created using the Write tool.
+
+3. **Log Session Creation:**
    ```
    Log: "Session file created: {SESSION_FILE}"
    ```
@@ -380,6 +391,7 @@ The following phases execute unconditionally for ALL modes (create, audit, impro
 **Location:** `.claude/cache/modular_index.json`
 
 1. **Ensure cache directory exists:**
+
    ```bash
    mkdir -p .claude/cache
    ```
@@ -489,6 +501,7 @@ The following phases execute unconditionally for ALL modes (create, audit, impro
    ```
 
    **Alternative (Bash):**
+
    ```bash
    # For each file, compute checksum
    CHECKSUM=$(sha256sum "$FILE_PATH" | cut -c1-16)
@@ -552,14 +565,14 @@ The following phases execute unconditionally for ALL modes (create, audit, impro
 
 **Skill Usage Reference:**
 
-| Skill | How It Uses modular_index.json |
-|-------|--------------------------------|
-| `preflight-check` | Validates all `required: true` files exist |
-| `hooks-setup` | Reads rules to configure appropriate hooks |
+| Skill                  | How It Uses modular_index.json                |
+| ---------------------- | --------------------------------------------- |
+| `preflight-check`      | Validates all `required: true` files exist    |
+| `hooks-setup`          | Reads rules to configure appropriate hooks    |
 | `acceptance-validator` | Loads testing-policy.md for test requirements |
-| `security-architect` | Loads security-policy.md for security checks |
-| `flow-feature-build` | Phase 0.5 loads rules based on feature paths |
-| `flow-plan` | Phase 2 loads relevant docs for planning |
+| `security-architect`   | Loads security-policy.md for security checks  |
+| `flow-feature-build`   | Phase 0.5 loads rules based on feature paths  |
+| `flow-plan`            | Phase 2 loads relevant docs for planning      |
 
 ## Phase 6.7: Session Artifact Validation (ALWAYS EXECUTED)
 
@@ -639,6 +652,7 @@ The following phases execute unconditionally for ALL modes (create, audit, impro
 ## Changelog
 
 ### v3.2 (2026-01-17)
+
 - **FEAT**: Implemented actual checksum generation in Phase 6.6
 - Added explicit compute_checksum() function with Python and Bash alternatives
 - Checksums now use truncated SHA256 format: "sha256:{first_16_chars}"
@@ -646,6 +660,7 @@ The following phases execute unconditionally for ALL modes (create, audit, impro
 - Enables downstream cache invalidation when rules change
 
 ### v3.1 (2026-01-17)
+
 - **FIX**: Added explicit "(ALWAYS EXECUTED)" markers to Phases 6.5 and 6.6
 - Added phase boundary separator "=== POST-CONDITIONAL PHASES ===" before Phase 6.5
 - Added directory creation step at start of Phase 6.5 (ensures .claude/sessions/ and .claude/cache/ exist)
@@ -653,6 +668,7 @@ The following phases execute unconditionally for ALL modes (create, audit, impro
 - These changes ensure session files and modular index are created for ALL modes (including audit/improve)
 
 ### v3.0 (2026-01-17)
+
 - **BREAKING**: Modular architecture is now the only supported mode
 - Removed monolithic architecture option and user prompts
 - Simplified Phase 2.5: Architecture Setup (no detection logic needed)
@@ -660,16 +676,25 @@ The following phases execute unconditionally for ALL modes (create, audit, impro
 - Phase 4.5 and 6.6 now execute unconditionally
 - Updated success messages to modular-only format
 
+### v2.2 (2026-01-18)
+
+- Fixed Phase 6.5: Added explicit Write instruction for session file creation
+- Session file is now properly created using the Write tool
+- Prevents session file from being silently skipped
+
 ### v2.1 (2026-01-17)
+
 - Added Phase 6.5: Context Session File Creation
 - Added Phase 6.6: Machine-Readable Modular Index Generation
 - Renumbered Phase 6 to Phase 7 (Documentation Update)
 
 ### v2.0 (2026-01-17)
+
 - Added `migrate-modular` mode for converting monolithic to modular architecture
 - Added Phase 2.5: Architecture Mode Detection
 - Added Phase 4.5: Modular Reference Validation
 - Support for both modular and monolithic architectures
 
 ### v1.0 (2026-01-10)
+
 - Initial implementation with create, audit, improve, recreate modes
