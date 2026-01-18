@@ -1,0 +1,60 @@
+/**
+ * ABOUTME: Global styles with Tailwind CSS v4
+ * RESPONSIBILITY: Define CSS variables for theming and base styles
+ */
+@import 'tailwindcss';
+
+@theme {
+  /* Primary colors - Brand */
+  --color-primary: oklch(0.7 0.15 250);
+  --color-primary-foreground: oklch(0.98 0 0);
+
+  /* Background and foreground */
+  --color-background: oklch(0.98 0 0);
+  --color-foreground: oklch(0.1 0 0);
+
+  /* Muted colors */
+  --color-muted: oklch(0.95 0 0);
+  --color-muted-foreground: oklch(0.4 0 0);
+
+  /* Card colors */
+  --color-card: oklch(1 0 0);
+  --color-card-foreground: oklch(0.1 0 0);
+
+  /* Border and input */
+  --color-border: oklch(0.9 0 0);
+  --color-input: oklch(0.9 0 0);
+  --color-ring: oklch(0.7 0.15 250);
+
+  /* Semantic colors */
+  --color-destructive: oklch(0.55 0.2 25);
+  --color-destructive-foreground: oklch(0.98 0 0);
+
+  /* Radius */
+  --radius: 0.5rem;
+
+  /* Font */
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+}
+
+.dark {
+  --color-background: oklch(0.1 0 0);
+  --color-foreground: oklch(0.98 0 0);
+  --color-muted: oklch(0.2 0 0);
+  --color-muted-foreground: oklch(0.65 0 0);
+  --color-card: oklch(0.15 0 0);
+  --color-card-foreground: oklch(0.98 0 0);
+  --color-border: oklch(0.25 0 0);
+  --color-input: oklch(0.25 0 0);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
+}

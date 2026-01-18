@@ -5,32 +5,17 @@
  */
 
 module.exports = {
-  // TypeScript and JavaScript files
-  '*.{ts,tsx}': [
-    'eslint --fix --max-warnings=0',
-    'prettier --write',
-  ],
+  // TypeScript and JavaScript files (exclude next-env.d.ts which is auto-generated)
+  '!(next-env).{ts,tsx}': ['eslint --fix --max-warnings=0 --no-warn-ignored', 'prettier --write'],
 
-  // JavaScript files (config files, etc.)
-  '*.{js,jsx,mjs,cjs}': [
-    'eslint --fix --max-warnings=0',
-    'prettier --write',
-  ],
-
-  // JSON files
-  '*.json': [
-    'prettier --write',
-  ],
+  // JSON files (exclude tsconfig)
+  '!(tsconfig).json': ['prettier --write'],
 
   // Markdown files
-  '*.md': [
-    'prettier --write',
-  ],
+  '*.md': ['prettier --write'],
 
   // CSS and styling
-  '*.{css,scss}': [
-    'prettier --write',
-  ],
+  '*.{css,scss}': ['prettier --write'],
 
   // Type checking for TypeScript (run on all TS files if any staged)
   '**/*.{ts,tsx}': () => 'pnpm tsc --noEmit',
