@@ -3,19 +3,29 @@
 # Task: Strategic Planner (v3.3.0 - Multi-Scope: Feature/Epic/Project)
 
 # Version: 3.3.0
+
 # Last Updated: 2026-01-17
+
 # Changes:
+
 # - v3.3.0: CRITICAL FIX - Added explicit termination, prohibited plan mode tools, skills run in planning-only mode
+
 # - v3.2.0: Phase 2 now prefers modular_index.json over parsing CLAUDE.md
+
 # - v3.1.0: Added modular architecture support in Phase 2 (Constitution)
+
 # - v3.0.0: Added brainstorming (Phase 0.5), writing-plans (Phase 4), DAG integration, error recovery
+
 # - v2.4.0: Added DAG-integrated team selection
+
 # - v2.3.0: Added error recovery for missing agents
+
 # - v2.2.0: Added hybrid model for team selection
 
 ## CRITICAL CONSTRAINTS - READ FIRST
 
 **This command is for PLANNING ONLY. It must NEVER:**
+
 1. Write any production code
 2. Create project files (except plan/session documents)
 3. Use `EnterPlanMode` or `ExitPlanMode` tools (these are Claude Code native tools that trigger implementation)
@@ -27,7 +37,9 @@
 **After Completion:** The user must manually run `/flow-issue-create` and then `/flow-feature-build` to implement.
 
 # Argument: $ARGUMENTS ([scope] name)
+
 # - scope: Optional. One of: feature, epic, project. Defaults to feature.
+
 # - name: Required. Name of the feature/epic/project to plan.
 
 #
@@ -59,11 +71,12 @@ Parse $ARGUMENTS to determine scope and plan name:
    - Example: "Authentication System" → "authentication_system"
 
 4. **Set SESSION_FILE variable:**
-   - If SCOPE == "feature" → SESSION_FILE = `.claude/sessions/context_session_feature_{PLAN_NAME}.md`
-   - If SCOPE == "epic" → SESSION_FILE = `.claude/sessions/context_session_epic_{PLAN_NAME}.md`
-   - If SCOPE == "project" → SESSION_FILE = `.claude/sessions/context_session_project_{PLAN_NAME}.md`
+   - If SCOPE == "feature" → SESSION*FILE = `.claude/sessions/context_session_feature*{PLAN_NAME}.md`
+   - If SCOPE == "epic" → SESSION*FILE = `.claude/sessions/context_session_epic*{PLAN_NAME}.md`
+   - If SCOPE == "project" → SESSION*FILE = `.claude/sessions/context_session_project*{PLAN_NAME}.md`
 
 **Example parsing:**
+
 - Input: "user authentication" → SCOPE = "feature", PLAN_NAME = "user_authentication"
 - Input: "epic authentication system" → SCOPE = "epic", PLAN_NAME = "authentication_system"
 - Input: "project e-commerce platform" → SCOPE = "project", PLAN_NAME = "e_commerce_platform"
@@ -73,6 +86,7 @@ Parse $ARGUMENTS to determine scope and plan name:
 **Purpose**: Explore requirements and design before implementation planning. This phase is MANDATORY per DEPENDENCY_GRAPH.md.
 
 1. **Invoke `brainstorming` Skill (PLANNING-ONLY MODE):**
+
    ```
    Run /brainstorming skill with:
    - SCOPE: $SCOPE (feature/epic/project)
@@ -104,9 +118,71 @@ Parse $ARGUMENTS to determine scope and plan name:
 Create the session context file using the SESSION_FILE variable determined in Phase 0.
 
 The file will be one of:
+
 - `.claude/sessions/context_session_feature_{PLAN_NAME}.md` (feature scope)
 - `.claude/sessions/context_session_epic_{PLAN_NAME}.md` (epic scope)
 - `.claude/sessions/context_session_project_{PLAN_NAME}.md` (project scope)
+
+**IMPORTANT**: Use the Write tool to create the session file with this initial structure:
+
+```markdown
+# Context Session: {SCOPE} - {PLAN_NAME}
+
+## Metadata
+
+| Field        | Value               |
+| ------------ | ------------------- |
+| Created      | {current_timestamp} |
+| Scope        | {SCOPE}             |
+| Plan Name    | {PLAN_NAME}         |
+| Status       | draft               |
+| Session File | {SESSION_FILE}      |
+
+---
+
+## Summary
+
+[To be filled after brainstorming phase]
+
+---
+
+## Requirements
+
+[To be filled after brainstorming phase]
+
+---
+
+## Implementation Plan
+
+[To be filled by writing-plans skill]
+
+---
+
+## Agent Advice
+
+[To be filled in Phase 5]
+
+---
+
+## Files to Modify
+
+[To be filled during planning]
+
+---
+
+## Dependencies
+
+[To be filled during planning]
+
+---
+
+## Notes
+
+[Additional notes]
+```
+
+**CRITICAL**: Do NOT skip this step. The session file MUST be created before proceeding to Phase 0.5.
+Downstream commands (`flow-issue-create`, `flow-feature-build`) depend on this file existing.
 
 ## Phase 2: Constitution
 
@@ -117,6 +193,7 @@ Read and parse the project's "Constitution" file: `CLAUDE.md`.
 **IMPORTANT (v3.2 change)**: Prefer JSON index over parsing CLAUDE.md for reliability.
 
 1. **Detect Modular Mode (JSON Index Preferred):**
+
    ```
    IS_MODULAR = false
    USE_JSON_INDEX = false
@@ -138,6 +215,7 @@ Read and parse the project's "Constitution" file: `CLAUDE.md`.
 2. **If IS_MODULAR, load additional context:**
 
    a) **Load global rules (JSON index preferred):**
+
    ```
    IF USE_JSON_INDEX:
      For each item in MODULAR_INDEX.auto_loaded:
@@ -150,6 +228,7 @@ Read and parse the project's "Constitution" file: `CLAUDE.md`.
    ```
 
    b) **Parse modular_index (JSON index preferred):**
+
    ```
    IF USE_JSON_INDEX:
      DOCS_INDEX = MODULAR_INDEX.on_demand
@@ -162,6 +241,7 @@ Read and parse the project's "Constitution" file: `CLAUDE.md`.
    ```
 
    c) **Identify relevant on-demand docs (JSON index preferred):**
+
    ```
    IF USE_JSON_INDEX:
      # Use structured load_when hints from JSON
@@ -195,6 +275,7 @@ Read and parse the project's "Constitution" file: `CLAUDE.md`.
 **Use dag.json for consistent agent selection across all flows.**
 
 1.  **Load Agent DAG:**
+
     ```
     Read .claude/agents/dag.json
     Extract:
@@ -206,6 +287,7 @@ Read and parse the project's "Constitution" file: `CLAUDE.md`.
 2.  **Start with the Core:** Read `[core_team]` list from `CLAUDE.md`.
 
 3.  **Match Feature Pattern (dag.json integration):**
+
     ```
     Analyze request to determine feature_pattern:
 
@@ -235,7 +317,7 @@ Read and parse the project's "Constitution" file: `CLAUDE.md`.
     ```
 
 4.  **Analyze for Additional Specialists:** Check request for keywords (e.g., "database", "performance").
-3.  **Recruit Specialists (Auto-Healing with Recovery):**
+5.  **Recruit Specialists (Auto-Healing with Recovery):**
     - `if specialist_file_exists:` add to team.
     - `else:`
       - Invoke `@agent-librarian "scout: $specialist"` with timeout: 300000ms
@@ -297,10 +379,12 @@ Read and parse the project's "Constitution" file: `CLAUDE.md`.
 Based on SCOPE variable, adjust the agent team composition to match planning level:
 
 **If SCOPE == "feature":**
+
 - Use core_team + request-specific specialists (current behavior)
 - Focus: Single feature implementation planning
 
 **If SCOPE == "epic":**
+
 - **Mandatory additions to team:**
   - `domain-logic-architect` (coordinate backend across multiple features)
   - `presentation-layer-architect` (coordinate frontend across multiple features)
@@ -309,6 +393,7 @@ Based on SCOPE variable, adjust the agent team composition to match planning lev
 - **Outcome:** Plan that coordinates 3-5 related features as cohesive epic
 
 **If SCOPE == "project":**
+
 - **Use full agent roster:**
   - All `core_team` members (security-architect, acceptance-validator, etc.)
   - `domain-logic-architect` (overall system architecture)
@@ -326,6 +411,7 @@ Based on SCOPE variable, adjust the agent team composition to match planning lev
 **IMPORTANT**: Use the `writing-plans` skill for structured plan generation (per DEPENDENCY_GRAPH.md Phase 3).
 
 1. **Invoke `writing-plans` Skill (PLANNING-ONLY MODE):**
+
    ```
    Run /writing-plans skill with:
    - SCOPE: $SCOPE
@@ -345,6 +431,7 @@ Based on SCOPE variable, adjust the agent team composition to match planning lev
 2. **Skill generates structured plan** to SESSION_FILE based on SCOPE:
 
 **For SCOPE == "feature":**
+
 - **Current behavior** - Single feature implementation plan
 - Include:
   - Feature overview and objectives
@@ -354,6 +441,7 @@ Based on SCOPE variable, adjust the agent team composition to match planning lev
   - Dependencies and prerequisites
 
 **For SCOPE == "epic":**
+
 - **Epic-level planning** - Coordinate multiple related features
 - Include:
   - Epic overview and business goals
@@ -365,6 +453,7 @@ Based on SCOPE variable, adjust the agent team composition to match planning lev
   - Create epic backlog structure
 
 **For SCOPE == "project":**
+
 - **Project-level planning** - High-level architecture and roadmap
 - Include:
   - Project vision and objectives
@@ -381,11 +470,13 @@ Based on SCOPE variable, adjust the agent team composition to match planning lev
 Use the sub-agents (from `AGENTS_USED_LIST`) _in parallel_ to get knowledge and advice.
 
 **CRITICAL:** Provide each agent with:
+
 - **SESSION_FILE** (the scope-specific context file from Phase 0)
 - **CLAUDE.md** (project constitution)
 - **SCOPE variable** (so agents understand planning level: feature/epic/project)
 
 This context allows agents to tailor their advice appropriately:
+
 - Feature scope → Focus on implementation details
 - Epic scope → Focus on coordination and shared components
 - Project scope → Focus on architecture and strategic decisions
@@ -395,6 +486,7 @@ This context allows agents to tailor their advice appropriately:
 Synthesize all advice into one "master plan" in the SESSION_FILE.
 
 Ensure the master plan reflects the appropriate scope:
+
 - **Feature scope:** Unified implementation plan for single feature
 - **Epic scope:** Coordinated plan for multiple features with clear dependencies
 - **Project scope:** Comprehensive project roadmap with epics and architecture
@@ -408,6 +500,7 @@ Ask the user questions about anything unclear.
 **THIS IS THE FINAL PHASE. The flow-plan command ENDS here.**
 
 1. **Confirm Plan Location:**
+
    ```
    Output to user:
    "✅ Plan complete and saved to: {SESSION_FILE}
@@ -434,12 +527,19 @@ Ask the user questions about anything unclear.
 # 1. If task completed successfully, set TASK_STATUS = "success"
 
 # 2. Call `python3 .claude/scripts/log_metric.py` silently with:
-#    - command: "flow-plan"
-#    - scope: $SCOPE (feature/epic/project)
-#    - plan_name: $PLAN_NAME
-#    - status: $TASK_STATUS
-#    - agents_used: $AGENTS_USED_LIST
-#    - start_time: $START_TIME
-#    - end_time: current_timestamp
+
+# - command: "flow-plan"
+
+# - scope: $SCOPE (feature/epic/project)
+
+# - plan_name: $PLAN_NAME
+
+# - status: $TASK_STATUS
+
+# - agents_used: $AGENTS_USED_LIST
+
+# - start_time: $START_TIME
+
+# - end_time: current_timestamp
 
 **Note:** The metrics help track command usage patterns, scope distribution (feature vs epic vs project), and agent collaboration effectiveness.

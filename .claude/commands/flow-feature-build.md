@@ -3,8 +3,11 @@
 # Task: Dynamic Task Executor (v3.3 Complete - Modular Architecture)
 
 # Modular Components:
+
 # - flow-feature-tdd.md: TDD workflow (Strategy → Red → Green → Refactor)
+
 # - flow-feature-rad.md: RAD workflow (Prototype → Analyze → Iterate → Test)
+
 # - flow-worktree-recovery.md: Git worktree conflict recovery
 
 # Argument: $ARGUMENT$ (e.g., Issue number)
@@ -14,10 +17,15 @@
 ## Metrics Block (START)
 
 # 1. Set START_TIME = current_timestamp
+
 # 2. Set TASK_STATUS = "fail" (default to failure)
+
 # 3. Set PREFLIGHT_RETRY_COUNT = 0
+
 # 4. Set MAX_PREFLIGHT_RETRIES = 3
+
 # 5. Set AGENT_TIMEOUT_MS = 300000 (5 minutes per agent)
+
 # 6. Set EXTERNAL_CALL_TIMEOUT_MS = 120000 (2 minutes for external calls)
 
 ## Phase 0: Pre-Flight Check (v3.3 - With Retry Loop)
@@ -27,6 +35,7 @@
 ### Timeout Configuration
 
 All external calls in this flow use these timeout values:
+
 - **Agent invocations**: 300000ms (5 minutes)
 - **VCS CLI operations**: 120000ms (2 minutes)
 - **CI/CD pipeline checks**: 600000ms (10 minutes)
@@ -39,6 +48,7 @@ WHILE PREFLIGHT_RETRY_COUNT < MAX_PREFLIGHT_RETRIES:
 ```
 
 1. **Invoke Pre-Flight Check Skill (with timeout)**
+
    ```
    Run /preflight-check skill with:
    - timeout: 180000ms
@@ -71,29 +81,31 @@ WHILE PREFLIGHT_RETRY_COUNT < MAX_PREFLIGHT_RETRIES:
    **NO-GO Auto-Remediation (v3.3 Enhancement):**
 
    a) **Analyze failure type:**
-      - If "dependencies missing" → Run `/dependency-installer` skill
-      - If "CLAUDE.md incomplete" → Run `/claude-md-architect audit`
-      - If "git conflicts" → Show manual resolution steps
-      - If "agents unavailable" → Run `@agent-librarian scout`
+   - If "dependencies missing" → Run `/dependency-installer` skill
+   - If "CLAUDE.md incomplete" → Run `/claude-md-architect audit`
+   - If "git conflicts" → Show manual resolution steps
+   - If "agents unavailable" → Run `@agent-librarian scout`
 
    b) **Execute remediation:**
-      ```
-      IF failure_type == "dependencies":
-        Run /dependency-installer with timeout: 300000ms
-      ELSE IF failure_type == "claude_md":
-        Run /claude-md-architect audit with timeout: 180000ms
-      ELSE IF failure_type == "agents":
-        Run @agent-librarian "scout: {missing_agents}" with timeout: 300000ms
-      ELSE:
-        # Cannot auto-remediate
-        Show detailed error with manual fix instructions
-        Ask user: "Fix manually and retry? (y/n)"
-        IF user declines: ABORT with status "preflight_failed"
-      ```
+
+   ```
+   IF failure_type == "dependencies":
+     Run /dependency-installer with timeout: 300000ms
+   ELSE IF failure_type == "claude_md":
+     Run /claude-md-architect audit with timeout: 180000ms
+   ELSE IF failure_type == "agents":
+     Run @agent-librarian "scout: {missing_agents}" with timeout: 300000ms
+   ELSE:
+     # Cannot auto-remediate
+     Show detailed error with manual fix instructions
+     Ask user: "Fix manually and retry? (y/n)"
+     IF user declines: ABORT with status "preflight_failed"
+   ```
 
    c) **Retry pre-flight check** (loop continues)
 
 3. **Max Retries Exceeded**
+
    ```
    IF PREFLIGHT_RETRY_COUNT >= MAX_PREFLIGHT_RETRIES:
      Log error: "Pre-flight check failed after {MAX_PREFLIGHT_RETRIES} attempts"
@@ -102,25 +114,59 @@ WHILE PREFLIGHT_RETRY_COUNT < MAX_PREFLIGHT_RETRIES:
      ABORT with escalation message
    ```
 
-4. **Log Pre-Flight Metrics**
+4. **Log Pre-Flight Metrics (with graceful fallback)**
    ```
-   python3 .claude/scripts/log_metric.py with:
-   - preflight_status: GO/WARNINGS/NO-GO
-   - preflight_retry_count: PREFLIGHT_RETRY_COUNT
-   - warnings_count: number of warnings
-   - errors_count: number of errors
-   - remediation_actions: list of auto-remediation attempts
+   IF .claude/scripts/log_metric.py exists:
+     python3 .claude/scripts/log_metric.py with:
+     - command: "flow-feature-build"
+     - status: "preflight_{GO/WARNINGS/NO-GO}"
+     - preflight_retry_count: PREFLIGHT_RETRY_COUNT
+     - warnings_count: number of warnings
+     - errors_count: number of errors
+   ELSE:
+     # Continue without metrics - they are optional
+     Log: "Preflight complete. Status: {GO/WARNINGS/NO-GO}"
    ```
 
-## Phase 0.5: Load Shared Context (NEW in v3.1, Enhanced v3.5)
+## Phase 0.5: Load Shared Context (NEW in v3.1, Enhanced v3.6)
 
 **Purpose**: Load project context once and cache it for all agents to eliminate redundant file reads.
 
-1. **Generate Shared Context**
+1. **Generate Shared Context (with graceful fallback)**
+
+   **Try using the load_context.py script:**
+
    ```
-   python3 .claude/scripts/load_context.py \
-     --feature "$FEATURE_NAME" \
-     --output ".claude/cache/context_$FEATURE_NAME.json"
+   IF .claude/scripts/load_context.py exists:
+     python3 .claude/scripts/load_context.py \
+       --feature "$FEATURE_NAME" \
+       --output ".claude/cache/context_$FEATURE_NAME.json"
+   ELSE:
+     WARNING: "load_context.py script not found. Using inline context loading."
+
+     # Fallback: Load context inline without script
+     CONTEXT = {
+       "version": "1.0-inline",
+       "feature": $FEATURE_NAME,
+       "constitution": {},
+       "rules": {},
+       "plans": {}
+     }
+
+     # Read CLAUDE.md directly
+     IF CLAUDE.md exists:
+       CONTEXT["constitution"] = parse_sections(CLAUDE.md)
+
+     # Read rules directly
+     FOR each file in .claude/rules/*.md:
+       CONTEXT["rules"][filename] = file_content
+
+     # Read agent plans if available
+     FOR each file in .claude/docs/$FEATURE_NAME/*.md:
+       CONTEXT["plans"][filename] = file_content
+
+     # Write inline-generated context
+     Write CONTEXT to .claude/cache/context_$FEATURE_NAME.json
    ```
 
    This creates a cached JSON containing:
@@ -153,6 +199,7 @@ WHILE PREFLIGHT_RETRY_COUNT < MAX_PREFLIGHT_RETRIES:
    **If IS_MODULAR == true:**
 
    a) **Auto-load global rules (JSON index preferred):**
+
    ```
    IF USE_JSON_INDEX:
      For each item in MODULAR_INDEX.auto_loaded:
@@ -165,6 +212,7 @@ WHILE PREFLIGHT_RETRY_COUNT < MAX_PREFLIGHT_RETRIES:
    ```
 
    b) **Load path-specific rules based on feature (JSON index preferred):**
+
    ```
    # Analyze feature to determine affected paths
    AFFECTED_PATHS = analyze_feature_paths($FEATURE_NAME)
@@ -185,6 +233,7 @@ WHILE PREFLIGHT_RETRY_COUNT < MAX_PREFLIGHT_RETRIES:
    ```
 
    c) **Reference on-demand docs in context (JSON index preferred):**
+
    ```
    IF USE_JSON_INDEX:
      context.docs_index = MODULAR_INDEX.on_demand
@@ -199,6 +248,7 @@ WHILE PREFLIGHT_RETRY_COUNT < MAX_PREFLIGHT_RETRIES:
    ```
 
    d) **Validate checksums (optional, JSON index only):**
+
    ```
    IF USE_JSON_INDEX AND MODULAR_INDEX.validation.checksums exists:
      CHECKSUM_ERRORS = []
@@ -238,28 +288,25 @@ WHILE PREFLIGHT_RETRY_COUNT < MAX_PREFLIGHT_RETRIES:
 
 2.  **Worktree Creation with Recovery Logic:**
 
-   **Modular Reference**: See `flow-worktree-recovery.md` for detailed recovery implementation.
+    **Modular Reference**: See `flow-worktree-recovery.md` for detailed recovery implementation.
 
-   **Attempt worktree creation:**
-   ```
-   git worktree add ./.trees/feature-$ARG -b feature-$ARG
-   ```
+    **Attempt worktree creation:**
 
-   **If worktree creation fails (already exists):**
+```
+git worktree add ./.trees/feature-$ARG -b feature-$ARG
+```
 
-   a) **Detect existing worktree:**
-      ```
-      git worktree list | grep ".trees/feature-$ARG"
-      ```
+**If worktree creation fails (already exists):**
 
-   b) **Analyze worktree state:**
-      - Check last commit date: `git -C ./.trees/feature-$ARG log -1 --format="%ar"`
-      - Check for uncommitted changes: `git -C ./.trees/feature-$ARG status --porcelain`
-      - Check branch status: `git -C ./.trees/feature-$ARG status -sb`
+a) **Detect existing worktree:**
+`       git worktree list | grep ".trees/feature-$ARG"
+      `
 
-   c) **Present recovery options to user:**
-      ```
-      ⚠️ Worktree already exists: .trees/feature-{ARG}
+b) **Analyze worktree state:** - Check last commit date: `git -C ./.trees/feature-$ARG log -1 --format="%ar"` - Check for uncommitted changes: `git -C ./.trees/feature-$ARG status --porcelain` - Check branch status: `git -C ./.trees/feature-$ARG status -sb`
+
+c) **Present recovery options to user:**
+```
+⚠️ Worktree already exists: .trees/feature-{ARG}
 
       Worktree Info:
       - Last commit: {LAST_COMMIT_TIME}
@@ -274,7 +321,7 @@ WHILE PREFLIGHT_RETRY_COUNT < MAX_PREFLIGHT_RETRIES:
       Choose option (a/b/c):
       ```
 
-   d) **Handle user choice:**
+d) **Handle user choice:**
 
       **Option a: Delete and recreate**
       ```bash
@@ -315,12 +362,15 @@ WHILE PREFLIGHT_RETRY_COUNT < MAX_PREFLIGHT_RETRIES:
       exit 1
       ```
 
-   e) **Log recovery action:**
-      ```
-      python3 .claude/scripts/log_metric.py with:
-      - worktree_recovery_action: "recreated" / "resumed" / "aborted"
-      - worktree_path: ".trees/feature-$ARG"
-      ```
+e) **Log recovery action (with graceful fallback):**
+`       IF .claude/scripts/log_metric.py exists:
+        python3 .claude/scripts/log_metric.py with:
+        - command: "flow-feature-build"
+        - status: "worktree_{recreated/resumed/aborted}"
+        - feature: $ARG
+      ELSE:
+        Log: "Worktree action: {recreated/resumed/aborted} for .trees/feature-$ARG"
+      `
 
 3.  **Analyze Task:** Read issue details and docs.
 
@@ -361,6 +411,7 @@ if `WORKFLOW == "TDD"`:
    - Invoke `@frontend-architect` for component architecture and UI components (timeout: 300000ms)
 
    **Full-stack changes** (v3.3 - PARALLEL invocation per dag.json):
+
    ```
    # Layer 1: Database (sequential)
    Invoke @database-architect (timeout: 300000ms)
@@ -404,6 +455,7 @@ if `WORKFLOW == "TDD"`:
 else if `WORKFLOW == "RAD"`:
 
 **Setup**:
+
 - Set `MAX_RAD_ITERATIONS = 3` (prevents infinite iteration)
 - Set `CURRENT_ITERATION = 1`
 
@@ -487,6 +539,7 @@ else if `WORKFLOW == "RAD"`:
    - Document test strategy in `test_cases.md`
 
 **RAD Cycle Summary**:
+
 - Minimum: 1 iteration (if prototype is good)
 - Maximum: 3 iterations (enforced limit)
 - Each iteration has clear objective: MVP → Refinement → Polish
@@ -524,6 +577,7 @@ else (Standard):
 **Step 1: Determine Feature Scope**
 
 Does the feature involve...
+
 - Database schema changes? → Invoke `@database-architect`
 - New API endpoints? → Invoke `@api-contract-designer`
 - Backend business logic? → Invoke `@domain-logic-architect`
@@ -533,6 +587,7 @@ Does the feature involve...
 **Step 2: Invoke Required Agents**
 
 Typical agent combinations:
+
 - **Backend-only feature**: database-architect → domain-logic-architect → api-contract-designer
 - **Frontend-only feature**: frontend-architect
 - **Full-stack feature**: database-architect → api-contract-designer → domain-logic-architect → frontend-architect
@@ -553,6 +608,7 @@ Regardless of workflow, these agents **MUST** be invoked:
   - RAD/Standard: Invoked after implementation
 
 **Security Gate Enforcement:**
+
 - If `security_plan.md` does not exist → **BLOCK** Phase 1.5 validation
 - If security review has unresolved CRITICAL issues → **BLOCK** implementation
 - Security review is NOT optional, even for "quick fixes"
@@ -560,6 +616,7 @@ Regardless of workflow, these agents **MUST** be invoked:
 ### Special Considerations
 
 **If specialist agent missing**:
+
 - Invoke `@agent-librarian` in "scout" mode to find or draft specialist
 - Log warning and continue with available agents
 - Flag for later architectural review
@@ -576,6 +633,7 @@ This phase prevents incoherent implementations by catching errors early.
 
 1. **Build Expected Plans List:**
    Based on agents invoked in Phase 2, build list of expected plan files:
+
    ```
    EXPECTED_PLANS = ["security_plan.md"]  # ALWAYS required (mandatory gate)
 
@@ -589,6 +647,7 @@ This phase prevents incoherent implementations by catching errors early.
    **Note:** `security_plan.md` is ALWAYS in the expected list because `@security-architect` is mandatory.
 
 2. **Check Plan Files Exist:**
+
    ```
    For each plan in EXPECTED_PLANS:
      Check if .claude/docs/{feature_name}/{plan} exists
@@ -616,6 +675,7 @@ This phase prevents incoherent implementations by catching errors early.
      - `frontend.md` (if `@frontend-architect` was invoked)
 
 2. **Invoke Implementation Orchestrator Skill**
+
    ```
    Use the implementation-orchestrator skill to:
    - Validate plan coherence across all layers
@@ -659,13 +719,17 @@ This phase prevents incoherent implementations by catching errors early.
    - Implement changes layer by layer (database → API → backend → frontend → UI)
    - Verify checkpoints after each layer
 
-5. **Log Validation Metrics**
+5. **Log Validation Metrics (with graceful fallback)**
    ```
-   python3 .claude/scripts/log_metric.py with:
-   - validation_status: PASS/WARNINGS/FAIL
-   - validation_time: duration
-   - warnings_count: number of warnings
-   - errors_count: number of errors
+   IF .claude/scripts/log_metric.py exists:
+     python3 .claude/scripts/log_metric.py with:
+     - command: "flow-feature-build"
+     - status: "validation_{PASS/WARNINGS/FAIL}"
+     - validation_status: PASS/WARNINGS/FAIL
+     - warnings_count: number of warnings
+     - errors_count: number of errors
+   ELSE:
+     Log: "Plan validation complete. Status: {PASS/WARNINGS/FAIL}"
    ```
 
 ## Phase 3: Validation Loop
@@ -769,33 +833,63 @@ Invoke the QA validation flow...
 
 Standardized file locations for consistency:
 
-| Type | Location | Purpose |
-|------|----------|---------|
-| Session context | `.claude/sessions/context_session_{scope}_{name}.md` | Ephemeral planning context |
+| Type             | Location                                             | Purpose                       |
+| ---------------- | ---------------------------------------------------- | ----------------------------- |
+| Session context  | `.claude/sessions/context_session_{scope}_{name}.md` | Ephemeral planning context    |
 | Validation state | `.claude/state/{feature_name}/validation_state.json` | Persistent iteration tracking |
-| Cached context | `.claude/cache/context_{feature_name}.json` | Cached CLAUDE.md + plans |
-| Agent plans | `.claude/docs/{feature_name}/*.md` | Generated architecture plans |
-| Logs | `.claude/logs/` | Metric logs and audit trails |
+| Cached context   | `.claude/cache/context_{feature_name}.json`          | Cached CLAUDE.md + plans      |
+| Agent plans      | `.claude/docs/{feature_name}/*.md`                   | Generated architecture plans  |
+| Logs             | `.claude/logs/`                                      | Metric logs and audit trails  |
 
 ---
 
 ## Metrics Block (END)
 
 # 1. Set END_TIME = current_timestamp
-# 2. If task completed successfully, set TASK_STATUS = "success"
-# 3. Call `python3 .claude/scripts/log_metric.py` silently with:
-#    - command: "flow-feature-build"
-#    - feature: $FEATURE_NAME
-#    - workflow: $WORKFLOW (TDD/RAD/Standard)
-#    - status: $TASK_STATUS
-#    - agents_used: list of invoked agents
-#    - preflight_retries: $PREFLIGHT_RETRY_COUNT
-#    - start_time: $START_TIME
-#    - end_time: $END_TIME
 
-**Version**: 3.5.0
-**Last Updated**: 2026-01-17
+# 2. If task completed successfully, set TASK_STATUS = "success"
+
+# 3. Log metrics (with graceful fallback):
+
+#
+
+# IF .claude/scripts/log_metric.py exists:
+
+# Call `python3 .claude/scripts/log_metric.py` silently with:
+
+# - command: "flow-feature-build"
+
+# - feature: $FEATURE_NAME
+
+# - workflow: $WORKFLOW (TDD/RAD/Standard)
+
+# - status: $TASK_STATUS
+
+# - agents_used: list of invoked agents
+
+# - preflight_retries: $PREFLIGHT_RETRY_COUNT
+
+# - start_time: $START_TIME
+
+# - end_time: $END_TIME
+
+# ELSE:
+
+# WARNING: "log_metric.py not found. Metrics logging skipped."
+
+# # Continue without error - metrics are optional
+
+**Version**: 3.6.0
+**Last Updated**: 2026-01-18
+**Changes from v3.5**:
+
+- Phase 0.5 now has graceful fallback if load_context.py script is missing
+- Metrics Block now has graceful fallback if log_metric.py script is missing
+- Commands continue to work even without supporting scripts
+- Clear warnings when scripts are missing
+
 **Changes from v3.4**:
+
 - Phase 0.5 now prefers `.claude/cache/modular_index.json` over parsing CLAUDE.md
 - JSON index provides reliable, structured access to modular rules and docs
 - Added checksum validation for detecting changed files since index generation
@@ -803,6 +897,7 @@ Standardized file locations for consistency:
 - Improved logging for modular context loading
 
 **Changes from v3.3**:
+
 - Enhanced Phase 0.5 with modular architecture support
 - Auto-loads global rules from .claude/rules/
 - Loads path-specific domain rules based on feature paths
@@ -810,6 +905,7 @@ Standardized file locations for consistency:
 - Agents can access rules via context.rules.global/domain
 
 **Changes from v3.2**:
+
 - Added Phase 0 retry loop with auto-remediation
 - Made Phase 0.5 context cache mandatory
 - Added test-strategy-planner to TDD workflow

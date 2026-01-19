@@ -26,6 +26,7 @@ Invoke this skill in two scenarios:
 ```
 
 **Automatic triggers:**
+
 - During `flow-plan` phase when test strategy is complete
 - During `flow-qa-validate` phase before PR approval
 - When `@project-coordinator` requests quality gate validation
@@ -47,12 +48,15 @@ Before any action, **read `CLAUDE.md`** and understand:
 When invoked with `define`, act as a **QA Planner**.
 
 ### Step 1: Read the Context
+
 ```
 Read: .claude/docs/{feature_name}/context_session_feature_{feature_name}.md
 ```
+
 Understand the feature's scope, objectives, and user stories.
 
 ### Step 2: Analyze All Related Plans
+
 ```
 Read: .claude/docs/{feature_name}/backend.md (if exists)
 Read: .claude/docs/{feature_name}/frontend.md (if exists)
@@ -60,10 +64,13 @@ Read: .claude/docs/{feature_name}/api_contract.md (if exists)
 Read: .claude/docs/{feature_name}/test_cases.md (if exists)
 Read: .claude/docs/{feature_name}/database.md (if exists)
 ```
+
 Cross-reference all plans to ensure comprehensive coverage.
 
 ### Step 3: Identify Critical Scenarios
+
 For each feature, identify:
+
 - **Happy Path:** The primary successful workflow
 - **Edge Cases:** Boundary conditions and unusual inputs
 - **Error Handling:** Expected failures and error messages
@@ -71,6 +78,7 @@ For each feature, identify:
 - **Performance Criteria:** Response times, load handling (if applicable)
 
 ### Step 4: Write Gherkin Acceptance Criteria
+
 Transform scenarios into testable Gherkin syntax:
 
 ```gherkin
@@ -102,47 +110,67 @@ Feature: {Feature Name}
 ```
 
 ### Step 5: Validate Testability
+
 For each scenario, verify:
+
 - [ ] Preconditions are achievable in test environment
 - [ ] Actions are specific and reproducible
 - [ ] Outcomes are measurable and observable
 - [ ] Scenarios are independent (no cross-dependencies)
 
 ### Step 6: Generate the AC File
-Save to: `.claude/docs/{feature_name}/acceptance_criteria.md`
+
+**Output Location:** `.claude/docs/{feature_name}/acceptance_criteria.md`
+
+**CRITICAL: Use the Write tool explicitly to create the file:**
+
+1. Ensure the directory `.claude/docs/{feature_name}/` exists
+2. Use the Write tool with the exact path: `.claude/docs/{feature_name}/acceptance_criteria.md`
+3. Include all sections from the template below
+4. Do NOT skip this step - the AC file MUST be created
 
 **Template:**
+
 ```markdown
 # Acceptance Criteria: {Feature Name}
 
 ## Feature Overview
+
 {Brief description from context file}
 
 ## Validation Method
+
 **Method:** {Playwright | API-Test | Manual-Only}
 **Rationale:** {Why this method was chosen based on CLAUDE.md}
 
 ## Scenarios
 
 ### Critical (Must Pass)
+
 {Gherkin scenarios tagged @critical}
 
 ### Standard
+
 {Gherkin scenarios for normal flows}
 
 ### Edge Cases
+
 {Gherkin scenarios tagged @edge-case}
 
 ### Error Handling
+
 {Gherkin scenarios tagged @error-handling}
 
 ## Security Considerations
+
 {Security-related scenarios if applicable}
 
 ## Performance Criteria
+
 {Performance requirements if applicable}
 
 ## Definition of Done
+
 - [ ] All @critical scenarios pass
 - [ ] All @standard scenarios pass
 - [ ] Edge cases handled gracefully
@@ -151,7 +179,9 @@ Save to: `.claude/docs/{feature_name}/acceptance_criteria.md`
 ```
 
 ### Step 7: Announce Completion
+
 Report to the session:
+
 ```
 ## Acceptance Criteria Defined
 
@@ -174,14 +204,17 @@ Ready for implementation.
 When invoked with `validate`, act as a **Quality Auditor**.
 
 ### Step 1: Read the Constitution (Golden Rule)
+
 ```
 Read: CLAUDE.md → [methodology].validation_method
 ```
 
 ### Step 2: Load Acceptance Criteria
+
 ```
 Read: .claude/docs/{feature_name}/acceptance_criteria.md
 ```
+
 Parse all scenarios and their expected outcomes.
 
 ### Step 3: Execute Dynamic Validation
@@ -195,6 +228,7 @@ Based on `validation_method`, execute the appropriate validation strategy:
 Execute end-to-end browser tests.
 
 **Setup:**
+
 ```bash
 # Ensure Playwright is configured
 npx playwright install --with-deps chromium
@@ -212,6 +246,7 @@ npx playwright install --with-deps chromium
    - Network requests succeed
 
 **Example Playwright Validation:**
+
 ```typescript
 // Scenario: Successful Login
 test('User can login with valid credentials', async ({ page }) => {
@@ -230,13 +265,14 @@ test('User can login with valid credentials', async ({ page }) => {
 
   // And a secure, HttpOnly cookie should be set
   const cookies = await page.context().cookies();
-  const sessionCookie = cookies.find(c => c.name === 'session');
+  const sessionCookie = cookies.find((c) => c.name === 'session');
   expect(sessionCookie?.httpOnly).toBe(true);
   expect(sessionCookie?.secure).toBe(true);
 });
 ```
 
 **Checklist for Playwright:**
+
 - [ ] All pages load without errors
 - [ ] Forms submit correctly
 - [ ] Navigation works as expected
@@ -261,6 +297,7 @@ Execute HTTP request validations.
    - Timing is within acceptable range
 
 **Example API-Test Validation:**
+
 ```bash
 # Scenario: Successful Login via API
 # Given valid user credentials exist
@@ -297,6 +334,7 @@ echo "[PASS] Login API validation successful"
 ```
 
 **Checklist for API-Test:**
+
 - [ ] All endpoints return expected status codes
 - [ ] Response schemas match API contract
 - [ ] Authentication headers work correctly
@@ -311,6 +349,7 @@ echo "[PASS] Login API validation successful"
 Generate a structured checklist for human validation.
 
 **Manual Validation Checklist Template:**
+
 ```markdown
 ## Manual Validation Checklist
 
@@ -319,6 +358,7 @@ Generate a structured checklist for human validation.
 **Date:** {current_date}
 
 ### Pre-Validation Setup
+
 - [ ] Test environment is accessible
 - [ ] Test data is prepared
 - [ ] Browser/device is configured
@@ -326,24 +366,28 @@ Generate a structured checklist for human validation.
 ### Scenario Validations
 
 #### Scenario 1: {scenario_name}
+
 **Steps:**
+
 1. [ ] Navigate to {page/endpoint}
 2. [ ] Perform {action}
 3. [ ] Verify {expected outcome}
 
-**Result:** [ ] PASS  [ ] FAIL
-**Notes:** _______________
+**Result:** [ ] PASS [ ] FAIL
+**Notes:** ******\_\_\_******
 
 #### Scenario 2: {scenario_name}
+
 [Repeat for each scenario]
 
 ### Sign-Off
+
 - [ ] All critical scenarios validated
 - [ ] Issues documented
-- [ ] Ready for merge: [ ] YES  [ ] NO
+- [ ] Ready for merge: [ ] YES [ ] NO
 
-**Validator Signature:** _______________
-**Date:** _______________
+**Validator Signature:** ******\_\_\_******
+**Date:** ******\_\_\_******
 ```
 
 Post comment requesting manual validation from Daniel.
@@ -353,6 +397,7 @@ Post comment requesting manual validation from Daniel.
 ### Step 4: Generate Validation Report
 
 **Report Format:**
+
 ```markdown
 ## Acceptance Validation Report
 
@@ -366,7 +411,7 @@ Post comment requesting manual validation from Daniel.
 ### Summary
 
 | Status | Count |
-|--------|-------|
+| ------ | ----- |
 | PASS   | {n}   |
 | FAIL   | {n}   |
 | SKIP   | {n}   |
@@ -378,6 +423,7 @@ Post comment requesting manual validation from Daniel.
 ### Detailed Results
 
 #### Critical Scenarios
+
 - [PASS] Scenario: Successful Login
   - Validation: Redirected to /dashboard, cookie set correctly
 - [FAIL] Scenario: Invalid Password
@@ -386,9 +432,11 @@ Post comment requesting manual validation from Daniel.
   - **Evidence:** [screenshot/curl output]
 
 #### Standard Scenarios
+
 [List all standard scenarios with results]
 
 #### Edge Cases
+
 [List edge case scenarios with results]
 
 ---
@@ -409,6 +457,7 @@ Post comment requesting manual validation from Daniel.
 {If NEEDS WORK:}
 @project-coordinator (Daniel), this implementation has {n} failing scenarios.
 The following issues must be addressed before merge:
+
 1. {Issue 1}
 2. {Issue 2}
 
@@ -423,19 +472,22 @@ This PR is ready for merge.
 
 ### acceptance_criteria.md Template
 
-```markdown
+````markdown
 # Acceptance Criteria: {Feature Name}
 
 ## Metadata
+
 - **Created:** {date}
 - **Author:** @acceptance-validator
 - **Feature:** {feature_name}
 - **Version:** 1.0
 
 ## Feature Overview
+
 {Brief description}
 
 ## Validation Method
+
 **Method:** {method}
 **Tools Required:** {Playwright | curl | Manual checklist}
 
@@ -450,6 +502,7 @@ Scenario: {name}
   When {action}
   Then {outcome}
 ```
+````
 
 ### Standard
 
@@ -481,11 +534,13 @@ Scenario: {name}
 ```
 
 ## Definition of Done
+
 - [ ] All @critical scenarios pass
 - [ ] 90%+ of standard scenarios pass
 - [ ] Edge cases handled gracefully
 - [ ] Error messages are user-friendly
-```
+
+````
 
 ### validation_report.md Template
 
@@ -514,7 +569,7 @@ Scenario: {name}
 
 ## Recommendation
 {Final recommendation}
-```
+````
 
 ---
 
@@ -623,6 +678,7 @@ Feature: User Profile API
 ## Changelog
 
 ### v1.0.0 (2026-01-17)
+
 - Converted from agent to skill format
 - Added comprehensive Workflow 1 (Define AC) with 7 steps
 - Added comprehensive Workflow 2 (Validate) with method-specific logic
